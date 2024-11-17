@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import WebSocketClient from '../../network/websocket/websocket_client';
 import './selectcamera.css';
 
@@ -11,56 +11,173 @@ interface SelectCameraProps {
 }
 
 const SelectCamera: React.FC<SelectCameraProps> = ({ onNavigate }) => {
-    const wsClient = useRef<WebSocketClient | null>(null);
+    const [wsClient, setWsClient] = useState<WebSocketClient | null>(null);
     const [ports, setPorts] = useState<Ports | null>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [loadingText, setLoadingText] = useState<string>("Carregando.");
+    const [error, setError] = useState<boolean>(false);
+    const [errorCount, setErrorCount] = useState<number>(0);
     const [camerasDisponiveis, setCamerasDisponiveis] = useState<string[]>([]);
     const [selectedCamera, setSelectedCamera] = useState<string>('');
 
     useEffect(() => {
-        const handlePorts = async (event: any, ports: Ports) => {
-            setPorts(ports);
+        console.log('Conteúdo carregado.');
 
-            const uri = `http://localhost:${ports.data_port}`;
-            const client = new WebSocketClient(uri);
-
-            await client.waitForConnection(); 
-            client.sendGetCamerasDisponiveis();
-
-            client.handleCameraList = (camerasList: string[]) => {
-                setCamerasDisponiveis(camerasList);
-            };
-
-            wsClient.current = client;
+        const fetchPorts = async () => {
+            try {
+                const port = await window.electron.getDataPort();
+                console.log('Porta: ', port);
+                setPorts({ data_port: port });
+            } catch (error) {
+                console.error("Erro ao buscar a porta:", error);
+                setError(true);
+                setIsLoading(false);
+            }
         };
 
-        window.electron.onSetPort(handlePorts);
+        fetchPorts();
 
         return () => {
-            if (wsClient.current) {
-                wsClient.current.close();
-                wsClient.current = null;
-            }
+            console.log('Conteúdo descarregado.');
+            if (wsClient) wsClient.close();
+            setWsClient(null);
         };
     }, []);
 
+    useEffect(() => {
+        if (ports) {
+            connectWebSocket();
+        }
+    }, [ports]);
+
+    useEffect(() => {
+        let intervalId: NodeJS.Timeout;
+
+        if (isLoading) {
+            intervalId = setInterval(() => {
+                setLoadingText((prev) => {
+                    return prev.endsWith("...") ? "Carregando." : prev + ".";
+                });
+            }, 500);
+        } else {
+            setLoadingText("Carregando.");
+        }
+
+        return () => clearInterval(intervalId);
+    }, [isLoading]);
+
+    const connectWebSocket = async () => {
+        if (!ports) {
+            console.log('Não foi possível encontrar a porta para o data.');
+            setWsClient(null);
+            setError(true);
+            setIsLoading(false);
+            return;
+        }
+
+        const uri = `http://localhost:${ports.data_port}`;
+        const client = new WebSocketClient(uri);
+
+        setIsLoading(true);
+
+        try {
+            const success = await client.waitForConnection();
+            if (!success) {
+                throw new Error('Falha na conexão com o WebSocket.');
+            }
+            setWsClient(client);
+            setError(false);
+
+            console.log('Conexão bem-sucedida.');
+
+            client.sendGetCamerasDisponiveis();
+
+            console.log('Esperando pelas cameras disponiveis.');
+
+            client.handleCameraList = (camerasList: string[]) => {
+                console.log('Cameras disponiveis recebidas. ', camerasList);
+                setCamerasDisponiveis(camerasList);
+                setIsLoading(false);
+            };
+        } catch (err) {
+            console.error('Falha ao conectar ao WebSocket:', err);
+            setError(true);
+            setIsLoading(false);
+            setWsClient(null);
+        }
+    };
+
+    const tentarNovamente = () => {
+        if (errorCount >= 3) {
+            setErrorCount(0);
+            alert("Em caso de erros constantes, tente executar o LibrasController com privilégios de administrador :)");
+        } else {
+            setErrorCount((prev) => prev + 1);
+            connectWebSocket();
+        }
+    };
+
     const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setSelectedCamera(event.target.value);
+    };
+
+    const confirmarCamera = () => {
+        if (!selectedCamera) {
+            alert("Selecione uma câmera para continuar.");
+            return;
+        }
+
+        if (wsClient) {
+            try {
+                wsClient.sendSetCamera(selectedCamera);
+                wsClient.close();
+                onNavigate('home');
+            } catch {
+                alert("Erro ao conectar ao servidor. Por favor, tente novamente.");
+            }
+        } else {
+            alert("WebSocket não inicializado. Tente novamente.");
+        }
     };
 
     return (
         <div className="container">
             <h1 className="title">LIBRASCONTROLLER</h1>
             <div id="select-container">
-                <select id="select-camera" value={selectedCamera} onChange={handleChange}>
-                    <option value="" disabled hidden>
-                        Selecione uma câmera...
-                    </option>
-                    {camerasDisponiveis.map((camera, index) => (
-                        <option key={index} value={camera}>
-                            {camera}
-                        </option>
-                    ))}
-                </select>
+                {isLoading ? (
+                    <p>{loadingText}</p>
+                ) : (
+                    <>
+                        {error ? (
+                            <>
+                                <select id="select-camera" value="" disabled>
+                                    <option value="" disabled hidden>
+                                        Não foi possível encontrar câmeras disponíveis
+                                    </option>
+                                </select>
+                                <button onClick={tentarNovamente} id="confirm-button">
+                                    TENTAR NOVAMENTE
+                                </button>
+                            </>
+                        ) : (
+                            <>
+                                <select id="select-camera" value={selectedCamera} onChange={handleChange}>
+                                    <option value="" disabled hidden>
+                                        Selecione uma câmera...
+                                    </option>
+                                    {camerasDisponiveis.map((camera, index) => (
+                                        <option key={index} value={camera}>
+                                            {camera}
+                                        </option>
+                                    ))}
+                                </select>
+                                <button onClick={confirmarCamera} id="confirm-button">
+                                    CONFIRMAR
+                                </button>
+                            </>
+                        )}
+                    </>
+                )}
             </div>
         </div>
     );

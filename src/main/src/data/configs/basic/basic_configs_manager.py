@@ -8,7 +8,7 @@ class BasicConfigManager:
     Salva e recupera dados de um arquivo JSON.
     """
     
-    config_file = "src/data/configs/basic/config_basica.json"
+    config_file = "src/main/src/data/configs/basic/config_basica.json"
     default_config = {
         "camera_selecionada": "",
         "webcam_width": 640,

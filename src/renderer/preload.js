@@ -1,7 +1,7 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('electron', {
-  getPort: () => ipcRenderer.invoke('get-port'),
-
-  onSetPort: (callback) => ipcRenderer.on('set-port', (event, ports) => callback(event, ports)),
+  getDataPort: () => ipcRenderer.invoke('getDataPort'),
+  getFramesPort: () => ipcRenderer.invoke('getFramesPort'),
+  onSetPort: (callback) => ipcRenderer.on('setPort', callback),
 });

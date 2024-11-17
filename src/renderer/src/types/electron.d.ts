@@ -12,10 +12,11 @@ declare global {
 
   interface Window {
     electron: {
-      getPort: () => Promise<number>;
+      getDataPort: () => Promise<number>; 
+      getFramesPort: () => Promise<number>; 
       onSetPort: (callback: (event: any, ports: Ports) => void) => void;
     };
   }
 }
 
-export { };
+export {};

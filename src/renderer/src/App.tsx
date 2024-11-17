@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import SelectCamera from './pages/selectcamera/selectcamera'
 
 type Page = 'selectcamera' | 'home' | 'gestocustom' | 'gestodetalhes';

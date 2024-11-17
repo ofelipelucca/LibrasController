@@ -51,23 +51,72 @@ class WebSocketClient {
             console.log('Desconectado do servidor:', this.uri);
             this.isConnected = false;
             this.stopHeartbeat();
-            this.tryReconnect();
         };
-
+        
         this.socket.onerror = (error) => {
             console.error('Erro no WebSocket:', error);
         };
     }
 
-    public waitForConnection(): Promise<void> {
-        return new Promise((resolve) => {
+    public waitForConnection(timeoutMs: number = 5000): Promise<boolean> {
+        return new Promise((resolve, reject) => {
             if (this.isConnected) {
-                resolve();
-            } else if (this.socket) {
-                this.socket.onopen = () => {
+                resolve(true);
+                return;
+            }
+
+            const timeout = setTimeout(() => {
+                console.warn('Timeout ao tentar conectar ao WebSocket.');
+                reject(false);
+            }, timeoutMs);
+
+            if (this.socket) {
+                const onOpen = (event: Event) => {
+                    clearTimeout(timeout);
                     this.isConnected = true;
-                    resolve();
+                    resolve(true);
                 };
+
+                const onClose = (event: CloseEvent) => {
+                    clearTimeout(timeout);
+                    console.warn('Conexão fechada antes de conectar.', event);
+                    reject(false);
+                };
+
+                const onError = (error: Event) => {
+                    clearTimeout(timeout);
+                    console.error('Erro ao conectar ao WebSocket.', error);
+                    reject(false);
+                };
+
+                this.socket.addEventListener("open", onOpen);
+                this.socket.addEventListener("close", onClose);
+                this.socket.addEventListener("error", onError);
+
+                const cleanup = () => {
+                    if (this.socket) {
+                        this.socket.removeEventListener("open", onOpen);
+                        this.socket.removeEventListener("close", onClose);
+                        this.socket.removeEventListener("error", onError);
+                    }
+                };
+
+                resolve = ((originalResolve) => {
+                    return (...args) => {
+                        cleanup();
+                        originalResolve(...args);
+                    };
+                })(resolve);
+
+                reject = ((originalReject) => {
+                    return (...args) => {
+                        cleanup();
+                        originalReject(...args);
+                    };
+                })(reject);
+            } else {
+                clearTimeout(timeout);
+                reject(false);
             }
         });
     }
@@ -78,6 +127,10 @@ class WebSocketClient {
 
             if (message.status) {
                 console.log(`Status: ${message.message}`);
+            }
+
+            if (message.pong) {
+                console.log('Pong recebido.');
             }
 
             if (message.cameras_disponiveis) {

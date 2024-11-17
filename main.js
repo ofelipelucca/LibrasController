@@ -66,15 +66,21 @@ function startPython(port1, port2) {
   });
 }
 
-ipcMain.handle('get-port', async () => {
-  try {
-    const port1 = await findAvailablePort(8000, 8200);
-    const port2 = await findAvailablePort(8201, 8400);
-    return { port1, port2 };
-  } catch (error) {
-    console.error('Erro ao buscar portas:', error);
-    return { port1: null, port2: null };
-  }
+let ports = {
+  data_port: 8000,
+  frames_port: 8201
+};
+
+ipcMain.handle('getDataPort', () => {
+  return ports.data_port; 
+});
+
+ipcMain.handle('getFramesPort', () => {
+  return ports.frames_port; 
+});
+
+ipcMain.handle('getPort', () => {
+  return ports; 
 });
 
 app.whenReady().then(() => {
