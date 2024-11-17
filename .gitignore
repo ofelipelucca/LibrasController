@@ -1,3 +1,15 @@
 node_modules
 build
-src/data/logs
+
+__pycache__/
+*.py[cod]
+*$py.class
+
+.env
+.venv/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+*.log
