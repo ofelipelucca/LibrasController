@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Um software que reconhece gestos de libras e gestos customizados, e os transforma em um input de teclado ou mouse. (Python, TypeScript, JavaScript)",
   "main": "main.js",
+  "homepage": "./",
   "scripts": {
     "start": "electron .",
     "build": "react-scripts build"

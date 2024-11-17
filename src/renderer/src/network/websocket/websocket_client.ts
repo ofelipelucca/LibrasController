@@ -6,6 +6,7 @@ interface Gesto {
 class WebSocketClient {
     public socket: WebSocket | null = null;
     public uri: string;
+    public isConnected: boolean = false;
     private reconnectAttempts: number = 0;
     private maxReconnectAttempts: number = 5;
     private pingIntervalId: any = null;
@@ -37,6 +38,7 @@ class WebSocketClient {
 
         this.socket.onopen = () => {
             console.log('Conectado ao servidor:', this.uri);
+            this.isConnected = true;
             this.reconnectAttempts = 0;
             this.startHeartbeat();
         };
@@ -47,6 +49,7 @@ class WebSocketClient {
 
         this.socket.onclose = () => {
             console.log('Desconectado do servidor:', this.uri);
+            this.isConnected = false;
             this.stopHeartbeat();
             this.tryReconnect();
         };
@@ -54,6 +57,19 @@ class WebSocketClient {
         this.socket.onerror = (error) => {
             console.error('Erro no WebSocket:', error);
         };
+    }
+
+    public waitForConnection(): Promise<void> {
+        return new Promise((resolve) => {
+            if (this.isConnected) {
+                resolve();
+            } else if (this.socket) {
+                this.socket.onopen = () => {
+                    this.isConnected = true;
+                    resolve();
+                };
+            }
+        });
     }
 
     private handleMessage(data: string) {
