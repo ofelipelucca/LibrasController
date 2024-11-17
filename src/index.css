@@ -1,0 +1,58 @@
+body {
+  margin: 0;
+  font-family: Tahoma, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+input {
+  background-color: #1f1f1f;
+  color: white;
+  border: 1px solid #444;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+label {
+  user-select: none;
+}
+
+span {
+  user-select: none;
+}
+
+img {
+  user-select: none;
+  -webkit-user-drag: none;
+  outline: none;
+}
+
+button {
+  background-color: #1f1f1f;
+  color: white;
+  font-family: Tahoma;
+  font-size: 2vh;
+  font-weight: bold;
+  border: 1px solid #444;
+  border-radius: 4px;
+  border-style: none;
+  cursor: pointer;
+}
+
+select {
+  display: block;
+  width: 50%;
+  padding: 10px;
+  font-size: 16px;
+  background-color: #1f1f1f;
+  color: white;
+  border: 1px solid #444;
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+}
+
+.container {
+  background-color: #141414;
+  color: white;
+}

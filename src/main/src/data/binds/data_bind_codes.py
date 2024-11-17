@@ -1,0 +1,25 @@
+from src.inputs.c_structures.c_constants import KEYBOARD_KEYS, LEFT, MIDDLE, RIGHT
+
+class DataBindCodes:
+    def __init__(self) -> None:
+        self.KEYBOARD_KEYS = set(KEYBOARD_KEYS.keys())
+        self.MOUSE_KEYS = {LEFT, MIDDLE, RIGHT}
+
+    def bind_existe(self, tecla: str) -> bool:
+        """
+        Verifica se a tecla está presente no banco de dados de binds.
+        """
+        tecla = tecla.lower()
+        return tecla in self.KEYBOARD_KEYS or tecla in self.MOUSE_KEYS
+    
+    def categorizar_bind(self, tecla: str) -> tuple:
+        """
+        Verifica qual o tipo de bind.
+
+        Returns:
+            tuple (bool, bool):
+                [0] = A bind está na lista de KEYBOARD_KEYS
+                [1] = A bind está na lista de MOUSE_KEYS
+        """
+        tecla = tecla.lower()
+        return tecla in self.KEYBOARD_KEYS, tecla in self.MOUSE_KEYS

@@ -1,0 +1,139 @@
+{
+    "data_gestos": {
+        "mouse_tracking": {
+            "index_finger_up": true,
+            "middle_finger_up": false,
+            "ring_finger_up": false,
+            "pinky_finger_up": false,
+            "thumb_finger_inside_hand": true,
+            "fingers_overlap": false,
+            "thumb_middle_touch": true,
+            "has_movement": false,
+            "space_between_index_and_middle_changes": false,
+            "pointing_down": false,
+            "thumb_cross_index": false,
+            "index_and_middle_together": false,
+            "bent_index": false
+        },
+        "mouse_left_click": {
+            "index_finger_up": true,
+            "middle_finger_up": false,
+            "ring_finger_up": false,
+            "pinky_finger_up": false,
+            "thumb_finger_inside_hand": false,
+            "fingers_overlap": false,
+            "thumb_middle_touch": false,
+            "has_movement": false,
+            "space_between_index_and_middle_changes": false,
+            "pointing_down": false,
+            "thumb_cross_index": false,
+            "index_and_middle_together": false,
+            "bent_index": false
+        },
+        "mouse_right_click": {
+            "index_finger_up": true,
+            "middle_finger_up": true,
+            "ring_finger_up": false,
+            "pinky_finger_up": false,
+            "thumb_finger_inside_hand": false,
+            "fingers_overlap": false,
+            "thumb_middle_touch": false,
+            "has_movement": false,
+            "space_between_index_and_middle_changes": false,
+            "pointing_down": false,
+            "thumb_cross_index": false,
+            "index_and_middle_together": false,
+            "bent_index": false
+        },
+        "mouse_left_hold": {
+            "index_finger_up": true,
+            "middle_finger_up": true,
+            "ring_finger_up": false,
+            "pinky_finger_up": false,
+            "thumb_finger_inside_hand": true,
+            "fingers_overlap": false,
+            "thumb_middle_touch": false,
+            "has_movement": false,
+            "space_between_index_and_middle_changes": false,
+            "pointing_down": false,
+            "thumb_cross_index": false,
+            "index_and_middle_together": false,
+            "bent_index": false
+        },
+        "mouse_right_hold": {
+            "index_finger_up": true,
+            "middle_finger_up": true,
+            "ring_finger_up": true,
+            "pinky_finger_up": false,
+            "thumb_finger_inside_hand": true,
+            "fingers_overlap": false,
+            "thumb_middle_touch": false,
+            "has_movement": false,
+            "space_between_index_and_middle_changes": false,
+            "pointing_down": false,
+            "thumb_cross_index": false,
+            "index_and_middle_together": false,
+            "bent_index": false
+        },
+        "OK": {
+            "index_finger_up": false,
+            "middle_finger_up": false,
+            "ring_finger_up": false,
+            "pinky_finger_up": false,
+            "thumb_finger_inside_hand": false,
+            "fingers_overlap": false,
+            "thumb_middle_touch": false,
+            "has_movement": false,
+            "space_between_index_and_middle_changes": false,
+            "pointing_down": false,
+            "thumb_cross_index": false,
+            "index_and_middle_together": false,
+            "bent_index": false
+        }
+    },
+    "atributos_relevantes": {
+        "mouse_tracking": [
+            "index_finger_up",
+            "middle_finger_up",
+            "ring_finger_up",
+            "pinky_finger_up",
+            "thumb_finger_inside_hand",
+            "thumb_middle_touch"
+        ],
+        "mouse_left_click": [
+            "index_finger_up",
+            "middle_finger_up",
+            "ring_finger_up",
+            "pinky_finger_up",
+            "thumb_finger_inside_hand"
+        ],
+        "mouse_right_click": [
+            "index_finger_up",
+            "middle_finger_up",
+            "ring_finger_up",
+            "pinky_finger_up",
+            "thumb_finger_inside_hand"
+        ],
+        "mouse_left_hold": [
+            "index_finger_up",
+            "middle_finger_up",
+            "ring_finger_up",
+            "pinky_finger_up",
+            "thumb_finger_inside_hand"
+        ],
+        "mouse_right_hold": [
+            "index_finger_up",
+            "middle_finger_up",
+            "ring_finger_up",
+            "pinky_finger_up",
+            "thumb_finger_inside_hand"
+        ],
+        "OK": [
+            "index_finger_up",
+            "middle_finger_up",
+            "ring_finger_up",
+            "pinky_finger_up",
+            "thumb_finger_inside_hand"
+        ]
+    }
+}

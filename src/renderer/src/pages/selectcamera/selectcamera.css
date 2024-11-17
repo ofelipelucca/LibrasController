@@ -1,0 +1,47 @@
+.container {
+  padding: 2vh;
+}
+
+.title {
+  font-size: 7vh;
+  font-family: Tahoma;
+  margin-top: 20vh;
+  margin-bottom: 15vh;
+  text-align: center;
+  user-select: none;
+}
+
+#select-container {
+  display: flex;
+  justify-content: center;
+  padding: 1vh;
+  user-select: none;
+}
+
+#select-camera {
+  padding: 2vh 2vh;
+  color: white;
+  background-color: #1f1f1f;
+  font-size: 1.8vh;
+  height: 50px;
+  width: 50vh;
+  border: 1px solid #444;
+  border-right: transparent;
+  border-radius: 4px 0 0 4px;
+  box-sizing: border-box;
+  outline: none;
+  cursor: pointer;
+}
+
+#confirm-button {
+  background-color: #1f1f1f;
+  color: white;
+  font-family: Tahoma;
+  font-size: 2vh;
+  font-weight: bold;
+  padding: 2vh 4vh;
+  border: 1px solid #444;
+  border-left: transparent;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+}
