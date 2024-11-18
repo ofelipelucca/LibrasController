@@ -25,7 +25,6 @@ class ConfigRouter:
             ValueError: Se o atributo passado não é reconhecido.
             Exception: Qualquer erro inesperado ao tentar ler o atributo será logado.
         """
-        ConfigRouter.config_logger.info(f"Tentando ler o atributo: {atributo}")
         try:
             if atributo in BasicConfigManager.get_atributos():
                 valor = BasicConfigManager.ler_atributo(atributo)
@@ -33,8 +32,6 @@ class ConfigRouter:
                 valor = ConfigRouter.state_manager.ler_atributo(atributo)
             else:
                 raise ValueError(f"Atributo desconhecido: {atributo}")
-            
-            ConfigRouter.config_logger.info(f"Atributo '{atributo}' lido com valor: '{valor}'")
             return valor
         except ValueError as ve:
             error_message = f"Erro: {ve}"
@@ -60,7 +57,6 @@ class ConfigRouter:
             ValueError: Se o atributo passado não é reconhecido.
             Exception: Qualquer erro inesperado ao tentar atualizar o atributo será logado.
         """
-        ConfigRouter.config_logger.info(f"Tentando atualizar o atributo: {atributo}, novo valor = {novo_valor}")
         try:
             if atributo in BasicConfigManager.get_atributos():
                 BasicConfigManager.atualizar_atributo(atributo, novo_valor)
@@ -69,8 +65,6 @@ class ConfigRouter:
             else:
                 raise ValueError(f"Atributo desconhecido: {atributo}")
 
-            ConfigRouter.config_logger.info(f"Atributo '{atributo}' atualizado para: '{novo_valor}'")
-        
         except ValueError as ve:
             error_message = f"Erro: {ve}"
             ConfigRouter.error_logger.error(error_message)

@@ -10,7 +10,7 @@ class WebSocketClient {
     private reconnectAttempts: number = 0;
     private maxReconnectAttempts: number = 5;
     private pingIntervalId: any = null;
-    private PING_INTERVAL: number = 10000;
+    private PING_INTERVAL: number = 100000;
 
     constructor(uri: string) {
         this.uri = uri;
@@ -28,6 +28,8 @@ class WebSocketClient {
             console.log('Fechando a conexão com o servidor:', this.uri);
             this.socket.close();
             this.socket = null;
+        } else {
+            console.log('O socket não está aberto.')
         }
         this.stopHeartbeat();
         this.reconnectAttempts = 0;
@@ -50,7 +52,6 @@ class WebSocketClient {
         this.socket.onclose = () => {
             console.log('Desconectado do servidor:', this.uri);
             this.isConnected = false;
-            this.stopHeartbeat();
         };
         
         this.socket.onerror = (error) => {
@@ -129,6 +130,10 @@ class WebSocketClient {
                 console.log(`Status: ${message.message}`);
             }
 
+            if (message.error) {
+                console.error(`Erro: ${message.error}`)
+            }
+
             if (message.pong) {
                 console.log('Pong recebido.');
             }
@@ -137,8 +142,8 @@ class WebSocketClient {
                 this.handleCameraList(message.cameras_disponiveis);
             }
 
-            if (message.allBinds) {
-                this.handleBindsList(message.allBinds);
+            if (message.allGestos) {
+                this.handleAllGestos(message.allGestos);
             }
 
             if (message.camera_selecionada) {
@@ -154,7 +159,7 @@ class WebSocketClient {
     }
 
     public handleCameraList(cameras: string[]) { }
-    public handleBindsList(bindsList: { [key: string]: Gesto }) { }
+    public handleAllGestos(gestosList: { [key: string]: Gesto }) { }
     public handleCameraSelecionada(camera_selecionada: string) { }
     public handleFrame(frame: string) { }
 
@@ -162,8 +167,12 @@ class WebSocketClient {
         this.send({ startDetection: true });
     }
 
-    public sendGetAllBinds() {
-        this.send({ getAllBinds: true });
+    public sendStopDetection() {
+        this.send({ stopDetection: true });
+    }
+
+    public sendGetAllGestos() {
+        this.send({ getAllGestos: true });
     }
 
     public sendGetGesto(nome: string) {

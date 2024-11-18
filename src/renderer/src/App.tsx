@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import SelectCamera from './pages/selectcamera/selectcamera'
+import Home  from "./pages/home/home";
 
 type Page = 'selectcamera' | 'home' | 'gestocustom' | 'gestodetalhes';
 
@@ -15,6 +16,7 @@ const App: React.FC = () => {
     return (
         <div>
             {currentPage === 'selectcamera' && <SelectCamera onNavigate={navigate} />}
+            {currentPage === 'home' && <Home onNavigate={navigate} />}
         </div>
     );
 };

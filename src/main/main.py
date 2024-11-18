@@ -1,5 +1,5 @@
-from src.logger.logger import Logger
 from src.mainloop.mainloop import MainLoop
+from src.logger.logger import Logger
 import ctypes   
 import asyncio  
 import sys

@@ -1,4 +1,4 @@
-from src.websocket.websocket_data_server import PyWebSocketServer
+from src.websocket.websocket_server import PyWebSocketServer
 from src.logger.logger import Logger
 import threading
 import asyncio

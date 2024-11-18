@@ -3,6 +3,7 @@ from src.data.configs.config_router import ConfigRouter
 from pygrabber.dshow_graph import FilterGraph
 from src.logger.logger import Logger
 import threading
+import asyncio 
 import pythoncom  
 import cv2
 
@@ -41,24 +42,25 @@ class Camera:
         try:
             self.selecionar_camera_por_nome(camera_nome)
             
-            while not self.stop_flag.is_set():
-                frame = self.ler_frame()
-                if frame is None:
-                    break
+            def detection_loop():
+                while not self.stop_flag.is_set():
+                    frame = self.ler_frame()
+                    if frame is None:
+                        break
 
-                results = self.gesture_reader.detectar_mao(frame)
-                frame = self.desenhar_mao(frame, results)
-                self.frame = frame
+                    results = self.gesture_reader.detectar_mao(frame)
+                    frame = self.desenhar_mao(frame, results)
+                    self.frame = frame
 
-                if results.multi_hand_landmarks:
-                    self.gesture_reader.ler_gesto(results)
+                    if results.multi_hand_landmarks:
+                        self.gesture_reader.ler_gesto(results)
+
+            asyncio.create_task(asyncio.to_thread(detection_loop))
 
         except Exception as e:
             error_message = f"Erro durante a captura de video: {e}"
             self.logger.error(error_message)
             raise RuntimeError(error_message)
-        finally:
-            self.stop()
 
     def stop(self) -> None:
         """

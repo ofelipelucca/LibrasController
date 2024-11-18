@@ -193,7 +193,7 @@ class GestureInterpretador:
         if DataBindsSalvas.verificar_nome(gesto): 
             bind = DataBindsSalvas.get_bind(gesto)
             tempo = DataBindsSalvas.obter_tempo_pressionado(gesto)
-            modo_continuo = DataBindsSalvas.obter_modo_continuo(gesto)
+            modo_continuo = DataBindsSalvas.obter_modo_toggle(gesto)
             input = Input(bind, tempo, modo_continuo)
             self.execute_input.executar_input(bind, input)
         if gesto == "mouse_tracking":

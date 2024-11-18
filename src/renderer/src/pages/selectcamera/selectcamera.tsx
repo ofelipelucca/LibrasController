@@ -21,12 +21,12 @@ const SelectCamera: React.FC<SelectCameraProps> = ({ onNavigate }) => {
     const [selectedCamera, setSelectedCamera] = useState<string>('');
 
     useEffect(() => {
-        console.log('Conteúdo carregado.');
+        console.log("Conteúdo carregado.");
 
         const fetchPorts = async () => {
             try {
                 const port = await window.electron.getDataPort();
-                console.log('Porta: ', port);
+                console.log("Porta: ", port);
                 setPorts({ data_port: port });
             } catch (error) {
                 console.error("Erro ao buscar a porta:", error);
@@ -38,7 +38,7 @@ const SelectCamera: React.FC<SelectCameraProps> = ({ onNavigate }) => {
         fetchPorts();
 
         return () => {
-            console.log('Conteúdo descarregado.');
+            console.log("Conteúdo descarregado.");
             if (wsClient) wsClient.close();
             setWsClient(null);
         };
@@ -68,7 +68,7 @@ const SelectCamera: React.FC<SelectCameraProps> = ({ onNavigate }) => {
 
     const connectWebSocket = async () => {
         if (!ports) {
-            console.log('Não foi possível encontrar a porta para o data.');
+            console.log("Não foi possível encontrar a porta para o data.");
             setWsClient(null);
             setError(true);
             setIsLoading(false);
@@ -83,24 +83,24 @@ const SelectCamera: React.FC<SelectCameraProps> = ({ onNavigate }) => {
         try {
             const success = await client.waitForConnection();
             if (!success) {
-                throw new Error('Falha na conexão com o WebSocket.');
+                throw new Error("Falha na conexão com o WebSocket.");
             }
             setWsClient(client);
             setError(false);
 
-            console.log('Conexão bem-sucedida.');
+            console.log("Conexão bem-sucedida.");
 
             client.sendGetCamerasDisponiveis();
 
-            console.log('Esperando pelas cameras disponiveis.');
+            console.log("Esperando pelas cameras disponiveis.");
 
             client.handleCameraList = (camerasList: string[]) => {
-                console.log('Cameras disponiveis recebidas. ', camerasList);
+                console.log("Cameras disponiveis recebidas. ", camerasList);
                 setCamerasDisponiveis(camerasList);
                 setIsLoading(false);
             };
         } catch (err) {
-            console.error('Falha ao conectar ao WebSocket:', err);
+            console.error("Falha ao conectar ao WebSocket:", err);
             setError(true);
             setIsLoading(false);
             setWsClient(null);

@@ -70,7 +70,7 @@ class ConfigStateManager:
                 config = json.load(file)
 
             if config.get(atributo) == novo_valor:
-                self.config_logger.info(f"Atributo '{atributo}' já está atualizado com valor: '{novo_valor}'")
+                self.config_logger.info(f"Atributo '{atributo}' ja esta atualizado com valor: '{novo_valor}'")
                 return
 
             config[atributo] = novo_valor
