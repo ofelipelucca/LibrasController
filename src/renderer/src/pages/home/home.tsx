@@ -24,7 +24,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
     useEffect(() => {
         const fetchPorts = async () => {
             try {
-                setLoadingText('Carregando as portas...');
+                setLoadingText('Carregando as portas.');
                 const data_port = await window.electron.getDataPort();
                 const frames_port = await window.electron.getFramesPort();
                 setPorts({ data_port, frames_port });
@@ -54,8 +54,32 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
         }
     }, [wsDataClient, wsFramesClient]);
 
+    useEffect(() => {
+        let intervalId: NodeJS.Timeout;
+
+        const animateLoadingText = (baseText: string) => {
+            setLoadingText((prev) => {
+                const dots = prev.replace(baseText, '').length;
+                return dots >= 3 ? baseText : `${prev}.`;
+            });
+        };
+
+        if (isLoading) {
+            intervalId = setInterval(() => {
+                if (loadingText.startsWith("Carregando")) {
+                    animateLoadingText("Carregando");
+                } else if (loadingText.startsWith("Abrindo a câmera")) {
+                    animateLoadingText("Abrindo a câmera");
+                }
+            }, 500);
+        }
+
+        return () => clearInterval(intervalId);
+    }, [isLoading, loadingText]);
+
+
     const connectWebSocket = async (ports: Ports) => {
-        setLoadingText('Conectando aos servidores...');
+        setLoadingText('Abrindo a câmera.');
         setIsLoading(true);
 
         try {
@@ -93,8 +117,8 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
 
         framesClient.handleFrame = (frameBase64: string) => {
             setFrame(frameBase64 ? `data:image/jpeg;base64,${frameBase64}` : null);
-            if (isLoading) setIsLoading(false);
             framesClient.sendGetFrame();
+            if (isLoading) setIsLoading(false);
         };
     };
 
