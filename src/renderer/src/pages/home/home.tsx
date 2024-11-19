@@ -6,7 +6,7 @@ import VideoContainer from './components/videocontainer';
 import ErrorContainer from './components/errorcontainer';
 
 interface HomeProps {
-    onNavigate: (page: 'gestocustom' | 'gestodetalhes', gesto?: Gesto) => void;
+    onNavigate: (page: 'gestocustom' | 'gestodetalhes', nome_do_gesto?: string, gesto?: Gesto) => void;
 }
 
 const Home: React.FC<HomeProps> = ({ onNavigate }) => {
@@ -16,7 +16,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [loadingText, setLoadingText] = useState('Carregando...');
     const [error, setError] = useState(false);
-    const [gestos, setGestos] = useState<{ [key: string]: Gesto }>({});
+    const [gestos, setGestos] = useState<{ [nome_do_gesto: string]: Gesto }>({});
     const [camerasDisponiveis, setCamerasDisponiveis] = useState<string[]>([]);
     const [selectedCamera, setSelectedCamera] = useState('');
     const [frame, setFrame] = useState<string | null>(null);
@@ -68,7 +68,8 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
             intervalId = setInterval(() => {
                 if (loadingText.startsWith("Carregando")) {
                     animateLoadingText("Carregando");
-                } else if (loadingText.startsWith("Abrindo a câmera")) {
+                }
+                if (loadingText.startsWith("Abrindo a câmera")) {
                     animateLoadingText("Abrindo a câmera");
                 }
             }, 500);
@@ -148,9 +149,9 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
         setWsFramesClient(null);
     };
 
-    const handleNavigate = async (page: 'gestocustom' | 'gestodetalhes', gesto?: Gesto) => {
+    const handleNavigate = async (page: 'gestocustom' | 'gestodetalhes', nome_do_gesto?: string, gesto?: Gesto) => {
         await closeClients();
-        onNavigate(page, gesto);
+        onNavigate(page, nome_do_gesto, gesto);
     };
 
     const handleCameraChange = async (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -170,7 +171,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
                 <GestosContainer
                     gestos={gestos}
                     adicionarGesto={() => handleNavigate('gestocustom')}
-                    mostrarDetalhesGesto={(gesto: Gesto) => handleNavigate('gestodetalhes', gesto)}
+                    mostrarDetalhesGesto={(nome_do_gesto: string, gesto: Gesto) => handleNavigate('gestodetalhes', nome_do_gesto, gesto)}
                 />
                 <VideoContainer
                     isLoading={isLoading}

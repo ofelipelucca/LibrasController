@@ -13,7 +13,11 @@ function VideoContainer({ isLoading, frame, selectedCamera, camerasDisponiveis, 
 
     return (
         <div className="videoContainer">
-            {frame ? (
+            {frame == 'ERRO' ? (
+                <>
+                    <img src="assets/camera_off.png" alt="Câmera desconectada" className="video" />
+                </>
+            ) : (
                 <>
                     <img src={frame} alt="Webcam" className="video" />
                     <select value={selectedCamera} onChange={handleCameraChange} className="selectCamera">
@@ -24,10 +28,7 @@ function VideoContainer({ isLoading, frame, selectedCamera, camerasDisponiveis, 
                         ))}
                     </select>
                 </>
-            ) : (
-                <>
-                    <img src="assets/camera_off.png" alt="Câmera desconectada" className="video" />
-                </>)
+            )
             }
         </div>
     );
