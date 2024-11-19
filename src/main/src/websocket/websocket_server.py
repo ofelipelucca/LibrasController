@@ -58,6 +58,13 @@ class PyWebSocketServer:
                 gesto = self.data_gestos.get(nome_gesto, None)
                 await self.send_data(websocket, {"gesto": gesto})
                 return
+            
+            if "getCustomizableState" in message:
+                nome_gesto = message["getCustomizableState"]
+                data_logger.info(f"Retornando o estado 'customizable' do gesto: {nome_gesto}")
+                is_custom = DataBindsSalvas.obter_customizable(nome_gesto)
+                await self.send_data(websocket, {"customizableState": is_custom})
+                return
 
             if "saveGesto" in message:
                 novo_gesto = message["saveGesto"]

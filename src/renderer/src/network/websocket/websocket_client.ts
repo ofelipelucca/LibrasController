@@ -53,7 +53,7 @@ class WebSocketClient {
             console.log('Desconectado do servidor:', this.uri);
             this.isConnected = false;
         };
-        
+
         this.socket.onerror = (error) => {
             console.error('Erro no WebSocket:', error);
         };
@@ -146,6 +146,10 @@ class WebSocketClient {
                 this.handleAllGestos(message.allGestos);
             }
 
+            if (message.getGesto) {
+                this.handleGesto(message.getGesto);
+            }
+
             if (message.camera_selecionada) {
                 this.handleCameraSelecionada(message.camera_selecionada);
             }
@@ -160,6 +164,8 @@ class WebSocketClient {
 
     public handleCameraList(cameras: string[]) { }
     public handleAllGestos(gestosList: { [key: string]: Gesto }) { }
+    public handleGesto(gesto: Gesto) { }
+    public handleCustomizableState(is_custom: boolean) { }
     public handleCameraSelecionada(camera_selecionada: string) { }
     public handleFrame(frame: string) { }
 
@@ -177,6 +183,10 @@ class WebSocketClient {
 
     public sendGetGesto(nome: string) {
         this.send({ getGesto: nome });
+    }
+
+    public sendGetCustomizableState(nome: string) {
+        this.send({ getCustomizableState: nome });
     }
 
     public sendSaveGesto(gesto: object, sobreescrever: boolean) {

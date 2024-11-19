@@ -3,7 +3,7 @@ import json
 
 class DataBindsSalvas:
     data_file = "src/main/src/data/binds/binds_salvas.json" 
-    binds_dict = {}  # Armazena (bind, tempo_pressionado, modo_toggle) para cada chave
+    binds_dict = {}  # Armazena (bind, tempo_pressionado, modo_toggle, customizable) para cada chave
 
     @staticmethod
     def verificar_nome(nome_do_gesto: str) -> bool:
@@ -61,17 +61,32 @@ class DataBindsSalvas:
     @staticmethod
     def obter_modo_toggle(nome_do_gesto: str) -> bool:
         """
-        Obtém o valor de modo_toggle associado à chave, se a chave existir.
+        Obtém o valor de 'modo_toggle' associado à chave, se a chave existir.
 
         Args:
             nome_do_gesto (str): O nome do gesto a ser recuperado.
 
         Returns:
-            bool: O valor de modo_toggle associado ao gesto.
+            bool: O valor de 'modo_toggle' associado ao gesto.
             bool: False, caso a informação não exista no banco de dados de binds.
         """
         DataBindsSalvas.ler_arquivo()
         return DataBindsSalvas.binds_dict.get(nome_do_gesto, {}).get('modo_toggle', False)
+    
+    @staticmethod
+    def obter_customizable(nome_do_gesto: str) -> bool:
+        """
+        Obtém o valor de 'customizable' associado à chave, se a chave existir.
+
+        Args:
+            nome_do_gesto (str): O nome do gesto a ser recuperado.
+
+        Returns:
+            bool: O valor de 'customizable' associado ao gesto.
+            bool: False, caso a informação não exista no banco de dados de binds.
+        """
+        DataBindsSalvas.ler_arquivo()
+        return DataBindsSalvas.binds_dict.get(nome_do_gesto, {}.get('customizable', False))
 
     @staticmethod
     def ler_arquivo() -> None:
