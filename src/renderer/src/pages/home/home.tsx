@@ -37,7 +37,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
         fetchPorts();
 
         return () => {
-            closeClients(); 
+            closeClients();
         };
     }, []);
 
@@ -99,7 +99,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
     };
 
     const fetchInitialData = async (dataClient: WebSocketClient, framesClient: WebSocketClient) => {
-        const requests = [
+        const requests: TimedRequest[] = [
             { delay: 50, method: () => dataClient.sendGetAllGestos() },
             { delay: 150, method: () => dataClient.sendGetCamera() },
             { delay: 250, method: () => dataClient.sendGetCamerasDisponiveis() },
@@ -107,10 +107,14 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
             { delay: 600, method: () => framesClient.sendGetFrame() },
         ];
 
+        await doRequests(requests);
+    };
+
+    const doRequests = async (requests: TimedRequest[]) => {
         for (const req of requests) {
-            await new Promise(resolve => setTimeout(resolve, req.delay));
+            await new Promise<void>(resolve => setTimeout(resolve, req.delay));
             req.method();
-        };
+        }
     };
 
     const handleErrorState = () => {
@@ -123,6 +127,17 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
     const handleNavigate = async (page: 'gestocustom' | 'gestodetalhes', gesto?: Gesto) => {
         await closeClients();
         onNavigate(page, gesto);
+    };
+
+    const handleCameraChange = async (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const requests: TimedRequest[] = [
+            { delay: 50, method: () => wsFramesClient?.sendStopDetection() },
+            { delay: 150, method: () => wsFramesClient?.sendSetCamera(event.target.value) },
+            { delay: 250, method: () => wsFramesClient?.sendStartDetection() },
+            { delay: 350, method: () => wsFramesClient?.sendGetFrame() },
+        ];
+
+        await doRequests(requests);
     };
 
     return (
@@ -138,7 +153,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
                     frame={frame}
                     selectedCamera={selectedCamera}
                     camerasDisponiveis={camerasDisponiveis}
-                    handleCameraChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSelectedCamera(e.target.value)}
+                    handleCameraChange={handleCameraChange}
                     error={error}
                     loadingText={loadingText}
                 />

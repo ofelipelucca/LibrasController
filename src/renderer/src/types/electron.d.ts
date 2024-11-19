@@ -12,11 +12,16 @@ declare global {
 
   interface Window {
     electron: {
-      getDataPort: () => Promise<number>; 
-      getFramesPort: () => Promise<number>; 
+      getDataPort: () => Promise<number>;
+      getFramesPort: () => Promise<number>;
       onSetPort: (callback: (event: any, ports: Ports) => void) => void;
     };
   }
+
+  interface TimedRequest {
+    delay: number;
+    method: () => void;
+  }
 }
 
-export {};
+export { };
