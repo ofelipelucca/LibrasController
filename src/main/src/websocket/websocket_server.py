@@ -108,7 +108,6 @@ class PyWebSocketServer:
         async for message in websocket:
             try:
                 message = json.loads(message)
-                data_logger.info(message)
                 await self.handle_message(websocket, message)
             except json.JSONDecodeError:
                 await websocket.send(json.dumps({"error": "JSON invalido."}))
