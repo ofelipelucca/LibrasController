@@ -24,7 +24,11 @@ function VideoContainer({ isLoading, frame, selectedCamera, camerasDisponiveis, 
                         ))}
                     </select>
                 </>
-            ) : null}
+            ) : (
+                <>
+                    <img src="assets/camera_off.png" alt="Câmera desconectada" className="video" />
+                </>)
+            }
         </div>
     );
 }
