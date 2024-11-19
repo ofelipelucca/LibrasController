@@ -1,0 +1,25 @@
+#detalhes-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.libras-container {
+    flex: 1;
+}
+
+.opcao-detalhes {
+    flex: 1;
+}
+
+.voltar-button {
+    width: 19vh;
+    height: 7vh;
+    background-color: #1f1f1f;
+    color: white;
+    font-family: Tahoma;
+    font-size: 2vh;
+    font-weight: bold;
+    border: 1px solid #444;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+  }
