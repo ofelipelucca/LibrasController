@@ -52,11 +52,15 @@ class PyWebSocketServer:
                 await self.send_data(websocket, {"allGestos": self.data_binds})
                 return
 
-            if "getGesto" in message:
-                nome_gesto = message["getGesto"]
+            if "getGestoByName" in message:
+                nome_gesto = message["getGestoByName"]
                 data_logger.info(f"Retornando o gesto: {nome_gesto}")
                 gesto = self.data_gestos.get(nome_gesto, None)
                 await self.send_data(websocket, {"gesto": gesto})
+                return
+            
+            if "getGestoByStates" in message:
+                #TO DO: lógica para procurar o nome do gesto pelos seus atributos
                 return
             
             if "getCustomizableState" in message:

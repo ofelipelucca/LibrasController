@@ -146,8 +146,8 @@ class WebSocketClient {
                 this.handleAllGestos(message.allGestos);
             }
 
-            if (message.getGesto) {
-                this.handleGesto(message.getGesto);
+            if (message.getGestoByName) {
+                this.handleGesto(message.getGestoByName);
             }
 
             if (message.camera_selecionada) {
@@ -181,8 +181,8 @@ class WebSocketClient {
         this.send({ getAllGestos: true });
     }
 
-    public sendGetGesto(nome: string) {
-        this.send({ getGesto: nome });
+    public getGestoByName(nome: string) {
+        this.send({ getGestoByName: nome });
     }
 
     public sendGetCustomizableState(nome: string) {
