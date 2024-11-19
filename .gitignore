@@ -13,3 +13,6 @@ env.bak/
 venv.bak/
 
 *.log
+**/binds_salvas.json
+**/config_basica.json
+**/estado_atual.json
