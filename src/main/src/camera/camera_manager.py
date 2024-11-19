@@ -71,7 +71,6 @@ class Camera:
             self.cap.release()
             self.cap = None
             self.logger.info("Camera liberada.")
-        ConfigRouter.atualizar_atributo("camera_selecionada", " ")
         self.logger.info("Objetos e recursos limpos.")
 
     def listar_cameras(self) -> list[str]:
