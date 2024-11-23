@@ -122,8 +122,7 @@ class DataBindsSalvas:
         """
         DataBindsSalvas.read_database()
 
-        if not sobreescrever:
-            if DataBindsSalvas.do_bind_exist(nome_do_gesto):
+        if DataBindsSalvas.do_bind_exist(nome_do_gesto) and not sobreescrever:
                 print(f"Erro: O gesto '{nome_do_gesto}' ja existe no banco de dados.")
                 return
 

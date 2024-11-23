@@ -8,6 +8,7 @@ declare global {
     bind: string;
     modo_toggle: boolean;
     tempo_pressionado: number;
+    customizable: boolean;
   }
 
   interface Window {

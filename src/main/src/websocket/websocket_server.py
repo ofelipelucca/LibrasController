@@ -69,8 +69,17 @@ class PyWebSocketServer:
             if "saveGesto" in message:
                 novo_gesto = message["saveGesto"]
                 sobreescrever = message.get("sobreescrever", True)
-                data_logger.info(f"Salvando o novo gesto custom: {novo_gesto}")
-                await self.send_data(websocket, {"status": "success", "message": "Gesto salvo com sucesso."})
+                
+                nome = novo_gesto["nome"]
+                bind = novo_gesto["bind"]
+                toggle = novo_gesto["modoToggle"]
+                tempo = novo_gesto["tempoPressionado"]
+
+                DataBindsSalvas.add_new_bind(nome, bind, tempo, toggle, sobreescrever)
+
+                msg = f"Gesto '{nome}' salvo com sucesso: bind: {bind}; toggle: {toggle}; tempo: {tempo}; sobreescrever: {sobreescrever}"
+                data_logger.info(msg)
+                await self.send_data(websocket, {"status": "success", "message": msg})
                 return
 
             if "setCamera" in message:

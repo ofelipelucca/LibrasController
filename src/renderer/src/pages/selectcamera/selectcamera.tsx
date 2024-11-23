@@ -21,12 +21,9 @@ const SelectCamera: React.FC<SelectCameraProps> = ({ onNavigate }) => {
     const [selectedCamera, setSelectedCamera] = useState<string>('');
 
     useEffect(() => {
-        console.log("Conteúdo carregado.");
-
         const fetchPorts = async () => {
             try {
                 const port = await window.electron.getDataPort();
-                console.log("Porta: ", port);
                 setPorts({ data_port: port });
             } catch (error) {
                 console.error("Erro ao buscar a porta:", error);
@@ -38,7 +35,6 @@ const SelectCamera: React.FC<SelectCameraProps> = ({ onNavigate }) => {
         fetchPorts();
 
         return () => {
-            console.log("Conteúdo descarregado.");
             if (wsClient) wsClient.close();
             setWsClient(null);
         };
