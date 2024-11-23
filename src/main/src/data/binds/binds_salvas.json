@@ -1,194 +1,194 @@
 {
     "Libras_A": {
         "bind": "a",
-        "tempo_pressionado": 5,
         "modo_toggle": false,
+        "tempo_pressionado": 5,
         "customizable": false
     },
     "Libras_B": {
         "bind": "b",
-        "tempo_pressionado": 5,
         "modo_toggle": false,
+        "tempo_pressionado": 5,
         "customizable": false
     },
     "Libras_C": {
         "bind": "c",
-        "tempo_pressionado": 5,
         "modo_toggle": false,
+        "tempo_pressionado": 5,
         "customizable": false
     },
     "Libras_D": {
         "bind": "d",
-        "tempo_pressionado": 5,
         "modo_toggle": false,
+        "tempo_pressionado": 5,
         "customizable": false
     },
     "Libras_E": {
         "bind": "e",
-        "tempo_pressionado": 5,
         "modo_toggle": true,
+        "tempo_pressionado": 6,
         "customizable": false
     },
     "Libras_F": {
         "bind": "f",
-        "tempo_pressionado": 5,
         "modo_toggle": false,
+        "tempo_pressionado": 5,
         "customizable": false
     },
     "Libras_G": {
         "bind": "g",
-        "tempo_pressionado": 5,
         "modo_toggle": false,
+        "tempo_pressionado": 5,
         "customizable": false
     },
     "Libras_H": {
         "bind": "h",
-        "tempo_pressionado": 5,
         "modo_toggle": true,
+        "tempo_pressionado": 5,
         "customizable": false
     },
     "Libras_I": {
         "bind": "i",
+        "modo_toggle": false,
         "tempo_pressionado": 5,
-        "modo_toggle": true,
         "customizable": false
     },
     "Libras_J": {
         "bind": "j",
-        "tempo_pressionado": 5,
         "modo_toggle": true,
+        "tempo_pressionado": 5,
         "customizable": false
     },
     "Libras_K": {
         "bind": "k",
-        "tempo_pressionado": 5,
         "modo_toggle": true,
+        "tempo_pressionado": 5,
         "customizable": false
     },
     "Libras_L": {
         "bind": "l",
-        "tempo_pressionado": 5,
         "modo_toggle": false,
+        "tempo_pressionado": 5,
         "customizable": false
     },
     "Libras_M": {
         "bind": "m",
-        "tempo_pressionado": 5,
         "modo_toggle": false,
+        "tempo_pressionado": 5,
         "customizable": false
     },
     "Libras_N": {
         "bind": "n",
-        "tempo_pressionado": 5,
         "modo_toggle": false,
+        "tempo_pressionado": 5,
         "customizable": false
     },
     "Libras_O": {
         "bind": "o",
+        "modo_toggle": false,
         "tempo_pressionado": 5,
-        "modo_toggle": true,
         "customizable": false
     },
     "Libras_P": {
         "bind": "p",
-        "tempo_pressionado": 5,
         "modo_toggle": false,
+        "tempo_pressionado": 5,
         "customizable": false
     },
     "Libras_Q": {
         "bind": "q",
-        "tempo_pressionado": 5,
         "modo_toggle": true,
+        "tempo_pressionado": 5,
         "customizable": false
     },
     "Libras_R": {
         "bind": "r",
-        "tempo_pressionado": 5,
         "modo_toggle": true,
+        "tempo_pressionado": 5,
         "customizable": false
     },
     "Libras_S": {
         "bind": "s",
-        "tempo_pressionado": 5,
         "modo_toggle": false,
+        "tempo_pressionado": 5,
         "customizable": false
     },
     "Libras_T": {
         "bind": "t",
-        "tempo_pressionado": 5,
         "modo_toggle": false,
+        "tempo_pressionado": 5,
         "customizable": false
     },
     "Libras_U": {
         "bind": "u",
-        "tempo_pressionado": 5,
         "modo_toggle": false,
+        "tempo_pressionado": 5,
         "customizable": false
     },
     "Libras_V": {
         "bind": "v",
-        "tempo_pressionado": 5,
         "modo_toggle": false,
+        "tempo_pressionado": 5,
         "customizable": false
     },
     "Libras_W": {
         "bind": "w",
-        "tempo_pressionado": 5,
         "modo_toggle": false,
+        "tempo_pressionado": 5,
         "customizable": false
     },
     "Libras_X": {
         "bind": "x",
-        "tempo_pressionado": 5,
         "modo_toggle": true,
+        "tempo_pressionado": 5,
         "customizable": false
     },
     "Libras_Y": {
         "bind": "y",
-        "tempo_pressionado": 5,
         "modo_toggle": false,
+        "tempo_pressionado": 5,
         "customizable": false
     },
     "Libras_Z": {
         "bind": "z",
-        "tempo_pressionado": 5,
         "modo_toggle": true,
+        "tempo_pressionado": 5,
         "customizable": false
     },
     "OK": {
         "bind": "enter",
-        "tempo_pressionado": 5,
         "modo_toggle": false,
+        "tempo_pressionado": 5,
         "customizable": true
     },
     "PAZ": {
         "bind": "space",
-        "tempo_pressionado": 5,
         "modo_toggle": true,
+        "tempo_pressionado": 5,
         "customizable": true
     },
     "mouse_left_click": {
         "bind": "M1",
-        "tempo_pressionado": 5,
         "modo_toggle": false,
+        "tempo_pressionado": 5,
         "customizable": true
     },
     "mouse_right_click": {
         "bind": "M2",
-        "tempo_pressionado": 5,
         "modo_toggle": false,
+        "tempo_pressionado": 5,
         "customizable": true
     },
     "mouse_left_hold": {
         "bind": "M1",
-        "tempo_pressionado": 5,
         "modo_toggle": true,
+        "tempo_pressionado": 5,
         "customizable": true
     },
     "mouse_right_hold": {
         "bind": "M2",
-        "tempo_pressionado": 5,
         "modo_toggle": true,
+        "tempo_pressionado": 5,
         "customizable": true
     }
 }

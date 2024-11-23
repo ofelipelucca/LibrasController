@@ -1,5 +1,10 @@
+from src.logger.logger import Logger
 import os
 import json
+
+logger = Logger.configure_application_logger()
+data_logger = Logger.configure_json_data_logger()
+error_logger = Logger.configure_error_logger()
 
 class DataBindsSalvas:
     data_file = "src/main/src/data/binds/binds_salvas.json" 
@@ -94,7 +99,9 @@ class DataBindsSalvas:
         Obtém todos os dados salvos no banco de dados de binds.
         """
         if not os.path.isfile(DataBindsSalvas.data_file):
-            raise FileExistsError(f"O arquivo {DataBindsSalvas.data_file} não existe.")
+            msg = f"O arquivo {DataBindsSalvas.data_file} não existe."
+            error_logger.info(msg)
+            raise FileExistsError(msg)
 
         with open(DataBindsSalvas.data_file, 'r') as file:
             DataBindsSalvas.binds_dict = json.load(file)
@@ -104,36 +111,45 @@ class DataBindsSalvas:
         """
         Salva os dados no banco de dados de binds.
         """
-        DataBindsSalvas.read_database()
-        with open(DataBindsSalvas.data_file, 'w') as file:
-            json.dump(DataBindsSalvas.binds_dict, file, indent=4)
+        try:
+            with open(DataBindsSalvas.data_file, 'w') as file:
+                json.dump(DataBindsSalvas.binds_dict, file, indent=4)
+                data_logger.info("Dados salvos com sucesso.")
+        except Exception as e:
+            error_logger.info(f"Não foi possível salvar no banco de dados: {e}")
 
     @staticmethod
     def add_new_bind(nome_do_gesto: str, bind: str, tempo_pressionado: int, modo_toggle: bool, sobreescrever: bool) -> None:
         """
         Salva uma nova bind no banco de dados de binds.
-
-        Args:
-            nome_do_gesto (str): O nome do novo gesto a ser adicionado.
-            bind (str): A bind que o gesto será vinculado.
-            tempo_pressionado (int): O tempo que a bind será pressionada (MODO_SINGULAR).
-            modo_toggle (bool): Define se a bind será contínua ou singular.
-            sobreescrever (bool): Se o gesto já existe, sobreescrever com o novo.
         """
         DataBindsSalvas.read_database()
 
         if DataBindsSalvas.do_bind_exist(nome_do_gesto) and not sobreescrever:
-                print(f"Erro: O gesto '{nome_do_gesto}' ja existe no banco de dados.")
-                return
+            msg = f"O gesto '{nome_do_gesto}' já existe no banco de dados."
+            error_logger.info(msg)
+            return
+
+        if nome_do_gesto in DataBindsSalvas.binds_dict:
+            gesto_atual = DataBindsSalvas.binds_dict[nome_do_gesto]
+            data_logger.info(f"GESTO ORIGINAL: bind: {gesto_atual['bind']}; "
+                             f"tempo: {gesto_atual['tempo_pressionado']}; "
+                             f"toggle: {gesto_atual['modo_toggle']}")
 
         DataBindsSalvas.binds_dict[nome_do_gesto] = {
             "bind": bind,
+            "modo_toggle": modo_toggle,
             "tempo_pressionado": tempo_pressionado,
-            "modo_toggle": modo_toggle
+            "customizable": DataBindsSalvas.binds_dict[nome_do_gesto]["customizable"]
         }
 
-        DataBindsSalvas.save_database()
+        gesto_atual = DataBindsSalvas.binds_dict[nome_do_gesto]
+        data_logger.info(f"GESTO EDITADO: bind: {gesto_atual['bind']}; "
+                         f"tempo: {gesto_atual['tempo_pressionado']}; "
+                         f"toggle: {gesto_atual['modo_toggle']}")
 
+        DataBindsSalvas.save_database()
+        
     @staticmethod
     def remove_bind(nome_do_gesto: str) -> None:
         """

@@ -48,11 +48,13 @@ class PyWebSocketServer:
                 await self.send_data(websocket, {"error": "Nao existe um processo de deteccao ativo no momento"})
 
             if "getAllGestos" in message:
+                self.load_data_binds()
                 data_logger.info("Retornando todos os gestos.")
                 await self.send_data(websocket, {"allGestos": self.data_binds})
                 return
 
             if "getGestoByName" in message:
+                self.load_data_gestos()
                 nome_gesto = message["getGestoByName"]
                 data_logger.info(f"Retornando o gesto: {nome_gesto}")
                 gesto = self.data_gestos.get(nome_gesto, None)
@@ -60,6 +62,7 @@ class PyWebSocketServer:
                 return
             
             if "getCustomizableState" in message:
+                self.load_data_binds()
                 nome_gesto = message["getCustomizableState"]
                 data_logger.info(f"Retornando o estado 'customizable' do gesto: {nome_gesto}")
                 is_custom = DataBindsSalvas.get_customizable(nome_gesto)

@@ -110,6 +110,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
 
     const setupHandlers = (dataClient: WebSocketClient, framesClient: WebSocketClient) => {
         dataClient.handleAllGestos = (gestosList: { [key: string]: Gesto }) => {
+            console.log(gestosList);
             setGestos(gestosList || {});
         };
 
