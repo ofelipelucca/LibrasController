@@ -19,7 +19,7 @@ class BasicConfigManager:
     error_logger = Logger.configure_error_logger()
     
     @staticmethod
-    def _verificando_arquivo() -> None:
+    def _verify_database() -> None:
         """ 
         Verifica se o arquivo de configuração existe; se não, cria com as configurações padrão.
         """
@@ -29,7 +29,7 @@ class BasicConfigManager:
             BasicConfigManager.config_logger.info("Arquivo de configuracao criado com as configuracoes padrao.")
 
     @staticmethod
-    def get_atributos() -> list:
+    def get_atributes() -> list:
         """
         Retorna as chaves dos atributos padrão definidos em default_config.
 
@@ -39,7 +39,7 @@ class BasicConfigManager:
         return list(BasicConfigManager.default_config.keys())
     
     @staticmethod
-    def ler_atributo(atributo: str) -> str:
+    def read_atribute(atributo: str) -> str:
         """ 
         Lê o valor de um atributo salvo dentro do arquivo de configuração.
         
@@ -49,7 +49,7 @@ class BasicConfigManager:
         Returns:
             str: O valor do atributo, ou uma string vazia se não encontrado.
         """
-        BasicConfigManager._verificando_arquivo()
+        BasicConfigManager._verify_database()
         try:
             with open(BasicConfigManager.config_file, "r") as file:
                 config = json.load(file)
@@ -63,7 +63,7 @@ class BasicConfigManager:
             return ""
 
     @staticmethod
-    def atualizar_atributo(atributo: str, novo_valor: str) -> None:
+    def update_atributo(atributo: str, novo_valor: str) -> None:
         """
         Atualiza o valor de um atributo no arquivo de configuração.
         
@@ -71,7 +71,7 @@ class BasicConfigManager:
             atributo (str): O nome do atributo a ser atualizado.
             novo_valor (str): O novo valor para o atributo.
         """
-        BasicConfigManager._verificando_arquivo()
+        BasicConfigManager._verify_database()
         try:
             with open(BasicConfigManager.config_file, "r") as file:
                 config = json.load(file)

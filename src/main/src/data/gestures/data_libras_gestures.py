@@ -10,7 +10,7 @@ class DataLibrasGestures:
             with open(self.file_data_libras_gestures, 'w') as file:
                 json.dump({"data_gestos": {}, "atributos_relevantes": {}}, file)
 
-    def obter_gestos(self) -> dict:
+    def get_gestos(self) -> dict:
         """
         Retorna o dicionário de gestos do banco de dados de libras.
 
@@ -21,7 +21,7 @@ class DataLibrasGestures:
             data = json.load(file)
         return data.get("data_gestos", {})
 
-    def obter_atributos_relevantes(self) -> dict:
+    def get_atributos_relevantes(self) -> dict:
         """
         Retorna o dicionário de atributos relevantes de cada sinal de libras.
 

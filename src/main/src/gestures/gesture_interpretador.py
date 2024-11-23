@@ -45,8 +45,8 @@ class GestureInterpretador:
         self.data_libras = DataLibrasGestures()
         self.data_custom_gestures = DataCustomGestures()
 
-        self.gestos_libras = self.data_libras.obter_gestos()
-        self.libras_atributos_relevantes = self.data_libras.obter_atributos_relevantes()
+        self.gestos_libras = self.data_libras.get_gestos()
+        self.libras_atributos_relevantes = self.data_libras.get_atributos_relevantes()
 
         self.gestos_custom = self.data_custom_gestures.obter_gestos()
         self.custom_atributos_relevantes = self.data_custom_gestures.obter_atributos_relevantes()
@@ -129,12 +129,12 @@ class GestureInterpretador:
 
         if len(candidatos) == 1:
             gesto_identificado = candidatos[0]
-            if self._verificar_gesto(gesto_atual, gesto_identificado):
-               ConfigRouter().atualizar_atributo("nome_gesto_direita", gesto_identificado)
-               self._executar_acao_gesto(hand_landmarks, gesto_identificado)
+            if self._verify_gesto(gesto_atual, gesto_identificado):
+               ConfigRouter().update_atribute("nome_gesto_direita", gesto_identificado)
+               self._execute_acao_gesto(hand_landmarks, gesto_identificado)
                return
 
-        ConfigRouter().atualizar_atributo("nome_gesto_direita", "MAO")
+        ConfigRouter().update_atribute("nome_gesto_direita", "MAO")
         
     def _interpretar_gesto_custom(self, hand_landmarks, gesto_atual: list):
         candidatos = list(self.gestos_custom.keys())
@@ -146,14 +146,14 @@ class GestureInterpretador:
 
         if len(candidatos) == 1:
             gesto_identificado = candidatos[0]
-            if self._verificar_gesto(gesto_atual, gesto_identificado):
-               self._executar_acao_gesto(hand_landmarks, gesto_identificado)
-               ConfigRouter().atualizar_atributo("nome_gesto_esquerda", gesto_identificado)
+            if self._verify_gesto(gesto_atual, gesto_identificado):
+               self._execute_acao_gesto(hand_landmarks, gesto_identificado)
+               ConfigRouter().update_atribute("nome_gesto_esquerda", gesto_identificado)
                return
         
-        ConfigRouter().atualizar_atributo("nome_gesto_esquerda", "MAO")
+        ConfigRouter().update_atribute("nome_gesto_esquerda", "MAO")
 
-    def _verificar_gesto(self, gesto: list, gesto_candidato: str) -> bool:
+    def _verify_gesto(self, gesto: list, gesto_candidato: str) -> bool:
         """
         Verifica, atributo por atributo (dentre os atributos relevantes para o gesto), se o gesto detectado é igual ao gesto candidato do banco de dados.
 
@@ -182,7 +182,7 @@ class GestureInterpretador:
                 return False
         return True
 
-    def _executar_acao_gesto(self, hand_landmarks, gesto: str) -> None:
+    def _execute_acao_gesto(self, hand_landmarks, gesto: str) -> None:
         """
         Executa o input do gesto identificado.
 
@@ -190,10 +190,10 @@ class GestureInterpretador:
             hand_landmarks (NormalizedLandmarkList): Os landmarks da mão a ser interpretada.
             gesto (str): O nome do gesto identificado.
         """
-        if DataBindsSalvas.verificar_nome(gesto): 
+        if DataBindsSalvas.do_bind_exist(gesto): 
             bind = DataBindsSalvas.get_bind(gesto)
-            tempo = DataBindsSalvas.obter_tempo_pressionado(gesto)
-            modo_continuo = DataBindsSalvas.obter_modo_toggle(gesto)
+            tempo = DataBindsSalvas.get_time_pressed(gesto)
+            modo_continuo = DataBindsSalvas.get_toggle(gesto)
             input = Input(bind, tempo, modo_continuo)
             self.execute_input.executar_input(bind, input)
         if gesto == "mouse_tracking":
@@ -282,9 +282,9 @@ class GestureInterpretador:
         q1 = np.array([hand_landmarks.landmark[finger2[0]].x, hand_landmarks.landmark[finger2[0]].y])
         q2 = np.array([hand_landmarks.landmark[finger2[-1]].x, hand_landmarks.landmark[finger2[-1]].y])
 
-        return self._se_intersectam(p1, p2, q1, q2)
+        return self._do_intersect(p1, p2, q1, q2)
 
-    def _se_intersectam(self, p1, p2, q1, q2) -> bool:
+    def _do_intersect(self, p1, p2, q1, q2) -> bool:
         """
         Verifica se duas linhas definidas por quatro pontos se intersectam.
 
@@ -296,36 +296,36 @@ class GestureInterpretador:
             bool: True se as linhas se intersectam.
             bool: False caso contrário.
         """
-        def _orientacao(p, q, r):
+        def __orientation(p, q, r):
             val = (q[1] - p[1]) * (r[0] - q[0]) - (q[0] - p[0]) * (r[1] - q[1])
             if val == 0:
                 return 0  # Colinear
             return 1 if val > 0 else 2  # Horário ou anti-horário
 
-        def _esta_no_segmento(p, q, r):
+        def __is_on_the_segment(p, q, r):
             if (min(p[0], r[0]) <= q[0] <= max(p[0], r[0]) and
                     min(p[1], r[1]) <= q[1] <= max(p[1], r[1])):
                 return True
             return False
 
         # Obter as orientações para diferentes combinações de pontos
-        o1 = _orientacao(p1, p2, q1)
-        o2 = _orientacao(p1, p2, q2)
-        o3 = _orientacao(q1, q2, p1)
-        o4 = _orientacao(q1, q2, p2)
+        o1 = __orientation(p1, p2, q1)
+        o2 = __orientation(p1, p2, q2)
+        o3 = __orientation(q1, q2, p1)
+        o4 = __orientation(q1, q2, p2)
 
         # Caso geral
         if o1 != o2 and o3 != o4:
             return True
 
         # Casos especiais de colinearidade
-        if o1 == 0 and _esta_no_segmento(p1, q1, p2):
+        if o1 == 0 and __is_on_the_segment(p1, q1, p2):
             return True
-        if o2 == 0 and _esta_no_segmento(p1, q2, p2):
+        if o2 == 0 and __is_on_the_segment(p1, q2, p2):
             return True
-        if o3 == 0 and _esta_no_segmento(q1, p1, q2):
+        if o3 == 0 and __is_on_the_segment(q1, p1, q2):
             return True
-        if o4 == 0 and _esta_no_segmento(q1, p2, q2):
+        if o4 == 0 and __is_on_the_segment(q1, p2, q2):
             return True
 
         return False

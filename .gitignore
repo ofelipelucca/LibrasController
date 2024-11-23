@@ -13,6 +13,7 @@ env.bak/
 venv.bak/
 
 *.log
+*.log.*
 
 src/main/src/data/configs/basic/config_basica.json
 src/main/src/data/configs/states/estado_atual.json

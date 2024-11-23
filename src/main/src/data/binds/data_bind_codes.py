@@ -5,14 +5,14 @@ class DataBindCodes:
         self.KEYBOARD_KEYS = set(KEYBOARD_KEYS.keys())
         self.MOUSE_KEYS = {LEFT, MIDDLE, RIGHT}
 
-    def bind_existe(self, tecla: str) -> bool:
+    def do_bind_exist(self, tecla: str) -> bool:
         """
         Verifica se a tecla está presente no banco de dados de binds.
         """
         tecla = tecla.lower()
         return tecla in self.KEYBOARD_KEYS or tecla in self.MOUSE_KEYS
     
-    def categorizar_bind(self, tecla: str) -> tuple:
+    def bind_type_check(self, tecla: str) -> tuple:
         """
         Verifica qual o tipo de bind.
 

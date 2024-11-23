@@ -70,7 +70,7 @@ class Input:
         """
         map_keys = DataBindCodes()
         tecla = tecla.lower()
-        if not map_keys.bind_existe(tecla):
+        if not map_keys.do_bind_exist(tecla):
             error_msg = f"A tecla '{tecla}' nao existe no mapa de teclas."
             self.logger.error(error_msg)
             self.error_logger.error(error_msg)

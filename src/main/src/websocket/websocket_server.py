@@ -62,7 +62,7 @@ class PyWebSocketServer:
             if "getCustomizableState" in message:
                 nome_gesto = message["getCustomizableState"]
                 data_logger.info(f"Retornando o estado 'customizable' do gesto: {nome_gesto}")
-                is_custom = DataBindsSalvas.obter_customizable(nome_gesto)
+                is_custom = DataBindsSalvas.get_customizable(nome_gesto)
                 await self.send_data(websocket, {"customizableState": is_custom})
                 return
 
@@ -77,12 +77,12 @@ class PyWebSocketServer:
                 camera_name = message["setCamera"]
                 msg = f"Camera '{camera_name}' atualizada com sucesso."
                 data_logger.info(msg)
-                self.config.atualizar_atributo("camera_selecionada", camera_name)
+                self.config.update_atribute("camera_selecionada", camera_name)
                 await self.send_data(websocket, {"status": "success", "message": msg})
                 return
 
             if "getCamera" in message:
-                camera = self.config.ler_atributo("camera_selecionada")
+                camera = self.config.read_atribute("camera_selecionada")
                 data_logger.info(f"Retornando o nome da camera selecionada:  {camera}")
                 await self.send_data(websocket, {"camera_selecionada": camera})
                 return
@@ -91,7 +91,7 @@ class PyWebSocketServer:
                 data_logger.info("Retornando cameras disponiveis.")
                 if not self.camera_detection: 
                     self.camera_detection = Camera()
-                cameras = self.camera_detection.listar_cameras()
+                cameras = self.camera_detection.list_cameras()
                 if cameras: await self.send_data(websocket, {"cameras_disponiveis": cameras})
                 else: await self.send_data(websocket, {"error": "Nao foi possivel retornar as cameras disponiveis."})
             
@@ -127,7 +127,7 @@ class PyWebSocketServer:
 
     def load_data_gestos(self):
         gestos_custom = DataCustomGestures().obter_gestos()
-        gestos_libras = DataLibrasGestures().obter_gestos()
+        gestos_libras = DataLibrasGestures().get_gestos()
         return gestos_libras | gestos_custom
 
     def load_data_binds(self):

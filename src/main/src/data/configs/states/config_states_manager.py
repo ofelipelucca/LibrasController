@@ -19,7 +19,7 @@ class ConfigStateManager:
         self.config_logger = Logger.configure_json_data_logger()
         self.error_logger = Logger.configure_error_logger()
 
-    def _verificando_arquivo(self) -> None:
+    def _verify_database(self) -> None:
         """ 
         Verifica se o arquivo de configuração existe; se não, cria com as configurações padrão.
         """
@@ -30,17 +30,17 @@ class ConfigStateManager:
                 self.state = self.state
                 self.config_logger.info("Arquivo de configuracao criado com as configuracoes padrao.")
                 
-    def get_atributos(self) -> list:
+    def get_atributes(self) -> list:
         """
         Retorna as chaves dos atributos padrão definidos em default_config.
 
         Returns:
             list: Lista contendo as chaves dos atributos padrão.
         """
-        self._verificando_arquivo()
+        self._verify_database()
         return list(self.state.keys())
     
-    def ler_atributo(self, atributo: str) -> str:
+    def read_atribute(self, atributo: str) -> str:
         """ 
         Lê o valor de um atributo salvo dentro do arquivo de configuração.
         
@@ -50,7 +50,7 @@ class ConfigStateManager:
         Returns:
             str: O valor do atributo, ou uma string vazia se não encontrado.
         """
-        self._verificando_arquivo()
+        self._verify_database()
         try:
             with open(self.config_file, "r") as file:
                 config = json.load(file)
@@ -63,8 +63,8 @@ class ConfigStateManager:
             self.config_logger.error(error_message)
             return ""
 
-    def atualizar_atributo(self, atributo: str, novo_valor: str) -> None:
-        self._verificando_arquivo()
+    def update_atribute(self, atributo: str, novo_valor: str) -> None:
+        self._verify_database()
         try:
             with open(self.config_file, "r") as file:
                 config = json.load(file)

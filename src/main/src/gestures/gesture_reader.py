@@ -34,7 +34,7 @@ class GestureReader:
         self.gestos_logger = Logger.configure_gestures_logger()
         self.error_logger = Logger.configure_error_logger()
 
-    def detectar_mao(self, frame: cv2.Mat):
+    def _detect_hand(self, frame: cv2.Mat):
         """
         Detecta a mão dentro do frame.
 
@@ -55,7 +55,7 @@ class GestureReader:
             self.error_logger.error(error_message)
             raise
 
-    def ler_gesto(self, results) -> None:
+    def read_gesture(self, results) -> None:
         """
         Se for possível detectar uma mão no frame, passa para o interpretador.
 
@@ -64,26 +64,26 @@ class GestureReader:
         """
         try:
             if not self.stop_event.is_set():
-                mao_direita = self._filtrar_mao(results, "Right")
-                mao_esquerda = self._filtrar_mao(results, "Left")
+                mao_direita = self._filter_hand(results, "Right")
+                mao_esquerda = self._filter_hand(results, "Left")
                 if mao_direita:
                     self.interpretador.interpretar(mao_direita, "Right")
                     self.gestos_logger.info("Gesto da mao direita interpretado com sucesso.")
                 else:
-                    ConfigRouter().atualizar_atributo("nome_gesto_direita", "MAO")
+                    ConfigRouter().update_atribute("nome_gesto_direita", "MAO")
                 
                 if mao_esquerda:
                     self.interpretador.interpretar(mao_esquerda, "Left")
                     self.gestos_logger.info("Gesto da mao esquerda interpretado com sucesso.")
                 else:
-                    ConfigRouter().atualizar_atributo("nome_gesto_esquerda", "MAO")
+                    ConfigRouter().update_atribute("nome_gesto_esquerda", "MAO")
         except Exception as e:
             error_message = f"Erro ao ler gesto: {e}"
             self.logger.error(error_message)
             self.gestos_logger.error(error_message)
             self.error_logger.error(error_message)
 
-    def _filtrar_mao(self, results, mao_para_filtrar: str):
+    def _filter_hand(self, results, mao_para_filtrar: str):
         """
         Filtra as mãos desejadas dentro de `results` e remove aquelas que não correspondem ao filtro.
 
@@ -105,7 +105,7 @@ class GestureReader:
             self.gestos_logger.error(error_message)
             self.error_logger.error(error_message)
 
-    def classificar_mao(self, handedness) -> str:
+    def classify_hand(self, handedness) -> str:
         """
         Determina qual mão está sendo detectada.
 

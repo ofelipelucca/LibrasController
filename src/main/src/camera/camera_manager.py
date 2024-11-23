@@ -30,30 +30,30 @@ class Camera:
         self.nome_gesto_direita: str = "MAO"
         self.nome_gesto_esquerda: str = "MAO"
 
-        ConfigRouter().atualizar_atributo("nome_gesto_esquerda", self.nome_gesto_esquerda)
-        ConfigRouter().atualizar_atributo("nome_gesto_direita", self.nome_gesto_direita)
+        ConfigRouter().update_atribute("nome_gesto_esquerda", self.nome_gesto_esquerda)
+        ConfigRouter().update_atribute("nome_gesto_direita", self.nome_gesto_direita)
 
         self.logger = Logger.configure_application_logger()
 
     async def start(self) -> None:
         self.logger.info("Processo de deteccao iniciado.")
 
-        camera_nome = ConfigRouter.ler_atributo("camera_selecionada")
+        camera_nome = ConfigRouter.read_atribute("camera_selecionada")
         try:
-            self.selecionar_camera_por_nome(camera_nome)
+            self.select_camera_by_name(camera_nome)
             
             def detection_loop():
                 while not self.stop_flag.is_set():
-                    frame = self.ler_frame()
+                    frame = self.read_frame()
                     if frame is None:
                         break
 
-                    results = self.gesture_reader.detectar_mao(frame)
-                    frame = self.desenhar_mao(frame, results)
+                    results = self.gesture_reader._detect_hand(frame)
+                    frame = self.draw_hand(frame, results)
                     self.frame = frame
 
                     if results.multi_hand_landmarks:
-                        self.gesture_reader.ler_gesto(results)
+                        self.gesture_reader.read_gesture(results)
 
             asyncio.create_task(asyncio.to_thread(detection_loop))
 
@@ -73,7 +73,7 @@ class Camera:
             self.logger.info("Camera liberada.")
         self.logger.info("Objetos e recursos limpos.")
 
-    def listar_cameras(self) -> list[str]:
+    def list_cameras(self) -> list[str]:
         """
         Lista todas as câmeras disponíveis no sistema.
 
@@ -87,7 +87,7 @@ class Camera:
         finally:
             pythoncom.CoUninitialize()
             
-    def selecionar_camera_por_nome(self, camera_nome: str) -> None:
+    def select_camera_by_name(self, camera_nome: str) -> None:
         """
         Seleciona a câmera pelo nome do dispositivo.
 
@@ -97,7 +97,7 @@ class Camera:
         Raises:
             ValueError: Se a câmera com o nome fornecido não for encontrada.
         """
-        dispositivos_video = self.listar_cameras()
+        dispositivos_video = self.list_cameras()
         if camera_nome in dispositivos_video:
             index = dispositivos_video.index(camera_nome)
             self.cap = cv2.VideoCapture(index)
@@ -107,7 +107,7 @@ class Camera:
             self.logger.error(error_message)
             raise ValueError(error_message)
 
-    def ler_frame(self) -> cv2.Mat:
+    def read_frame(self) -> cv2.Mat:
         """
         Lê o frame da webcam.
 
@@ -123,7 +123,7 @@ class Camera:
             raise SystemError(error_message)
         return cv2.flip(frame, 1)
 
-    def desenhar_mao(self, frame: cv2.Mat, results) -> cv2.Mat:
+    def draw_hand(self, frame: cv2.Mat, results) -> cv2.Mat:
         """
         Desenha a mão detectada no frame.
 
@@ -162,7 +162,7 @@ class Camera:
                 text_y = y_left - 3
                 cv2.rectangle(frame, (x_left, y_left - 15), (x_right, y_left), (0, 0, 0), -1)  # Fundo do texto
 
-                mao_detectada = self.gesture_reader.classificar_mao(handedness)
+                mao_detectada = self.gesture_reader.classify_hand(handedness)
 
                 if mao_detectada not in {LEFT, RIGHT}:
                     error_message = "'mao_detectada' deve ser 'Left' ou 'Right'."
@@ -170,14 +170,14 @@ class Camera:
                     raise ValueError(error_message)
 
                 if mao_detectada == LEFT:
-                    self.nome_gesto_esquerda = ConfigRouter().ler_atributo("nome_gesto_esquerda")
+                    self.nome_gesto_esquerda = ConfigRouter().read_atribute("nome_gesto_esquerda")
                     cv2.putText(frame, self.nome_gesto_esquerda, (text_x, text_y), FONT, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
                 if mao_detectada == RIGHT:
-                    self.nome_gesto_direita = ConfigRouter().ler_atributo("nome_gesto_direita")
+                    self.nome_gesto_direita = ConfigRouter().read_atribute("nome_gesto_direita")
                     cv2.putText(frame, self.nome_gesto_direita, (text_x, text_y), FONT, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
         return frame
 
-    def mostrar_frame(self, frame: cv2.Mat) -> None:
+    def show_frame(self, frame: cv2.Mat) -> None:
         """
         Exibe o frame capturado em uma janela.
         """

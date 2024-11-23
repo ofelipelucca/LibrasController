@@ -94,8 +94,8 @@ class Mouse(Device):
             y (int): Coordenada y.
         """
         screen_width, screen_height = Mouse._get_screen_dimensions()
-        webcam_width = int(ConfigRouter().ler_atributo("webcam_width"))
-        webcam_height = int(ConfigRouter().ler_atributo("webcam_height"))
+        webcam_width = int(ConfigRouter().read_atribute("webcam_width"))
+        webcam_height = int(ConfigRouter().read_atribute("webcam_height"))
 
         x_atual, y_atual = Mouse._get_cursor_pos()
         x_proporcional = np.interp(webcam_width * x, (0, webcam_width), (0, screen_width))
@@ -122,12 +122,12 @@ class Mouse(Device):
             y (int): Coordenada adicionada à y.
         """        
         screen_width, screen_height = Mouse._get_screen_dimensions()
-        webcam_width = int(ConfigRouter().ler_atributo("webcam_width"))
-        webcam_height = int(ConfigRouter().ler_atributo("webcam_height"))
+        webcam_width = int(ConfigRouter().read_atribute("webcam_width"))
+        webcam_height = int(ConfigRouter().read_atribute("webcam_height"))
 
         x_atual, y_atual = Mouse._get_cursor_pos()
-        x_ultima_pos_proporcional =  ConfigRouter().ler_atributo("x_ultima_pos_cursor") 
-        y_ultima_pos_proporcional = ConfigRouter().ler_atributo("y_ultima_pos_cursor") 
+        x_ultima_pos_proporcional =  ConfigRouter().read_atribute("x_ultima_pos_cursor") 
+        y_ultima_pos_proporcional = ConfigRouter().read_atribute("y_ultima_pos_cursor") 
 
         x_proporcional = np.interp(webcam_width * x, (0, webcam_width), (0, screen_width))
         y_proporcional = np.interp(webcam_height * y, (0, webcam_height), (0, screen_height))
@@ -142,8 +142,8 @@ class Mouse(Device):
             x_diff_proporcional = 0
             y_diff_proporcional = 0
 
-        ConfigRouter().atualizar_atributo("x_ultima_pos_cursor", x_proporcional)
-        ConfigRouter().atualizar_atributo("y_ultima_pos_cursor", y_proporcional)
+        ConfigRouter().update_atribute("x_ultima_pos_cursor", x_proporcional)
+        ConfigRouter().update_atribute("y_ultima_pos_cursor", y_proporcional)
 
         x_novo = x_atual + x_diff_proporcional
         y_novo = y_atual + y_diff_proporcional

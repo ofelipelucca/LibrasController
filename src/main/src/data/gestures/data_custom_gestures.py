@@ -82,7 +82,7 @@ class DataCustomGestures:
 
             nome_do_gesto = next(iter(novo_gesto_custom))
 
-            DataBindsSalvas.adicionar_nova_bind(nome_do_gesto, bind, tempo_pressionado, sobreescrever)
+            DataBindsSalvas.add_new_bind(nome_do_gesto, bind, tempo_pressionado, sobreescrever)
 
         except json.JSONDecodeError:
             raise ValueError("Erro ao decodificar o arquivo JSON de gestos custom.")
@@ -113,7 +113,7 @@ class DataCustomGestures:
                 with open(self.file_data_custom_gestures, 'w') as file:
                     json.dump(data, file, indent=4)
 
-                DataBindsSalvas.remover_bind(nome_do_gesto)
+                DataBindsSalvas.remove_bind(nome_do_gesto)
 
             except json.JSONDecodeError:
                 raise ValueError("Erro ao decodificar o arquivo JSON de gestos custom.")

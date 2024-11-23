@@ -33,7 +33,7 @@ class ExecuteInput:
         Interrompe a simulação de qualquer input de teclado ou mouse que esteja ativo.
         """
         if self.ultimo_input_code and self.input_em_andamento:
-            eh_input_teclado, eh_input_mouse = self.data_bind_codes.categorizar_bind(self.ultimo_input_code)
+            eh_input_teclado, eh_input_mouse = self.data_bind_codes.bind_type_check(self.ultimo_input_code)
             if eh_input_teclado:
                 Keyboard.up(self.ultimo_input_code)
             if eh_input_mouse:
@@ -52,7 +52,7 @@ class ExecuteInput:
         self._liberar_input_atual()
         self.input_em_andamento = True
 
-        eh_input_teclado, eh_input_mouse = self.data_bind_codes.categorizar_bind(bind)
+        eh_input_teclado, eh_input_mouse = self.data_bind_codes.bind_type_check(bind)
         if eh_input_teclado:
             Keyboard.down(bind)
         if eh_input_mouse:

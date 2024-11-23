@@ -11,7 +11,7 @@ class ConfigRouter:
     error_logger = Logger.configure_error_logger()
 
     @staticmethod
-    def ler_atributo(atributo: str) -> str:
+    def read_atribute(atributo: str) -> str:
         """ 
         Decide qual classe filha deve lidar com a leitura do atributo e realiza a leitura.
 
@@ -26,10 +26,10 @@ class ConfigRouter:
             Exception: Qualquer erro inesperado ao tentar ler o atributo será logado.
         """
         try:
-            if atributo in BasicConfigManager.get_atributos():
-                valor = BasicConfigManager.ler_atributo(atributo)
-            elif atributo in ConfigRouter.state_manager.get_atributos():
-                valor = ConfigRouter.state_manager.ler_atributo(atributo)
+            if atributo in BasicConfigManager.get_atributes():
+                valor = BasicConfigManager.read_atribute(atributo)
+            elif atributo in ConfigRouter.state_manager.get_atributes():
+                valor = ConfigRouter.state_manager.read_atribute(atributo)
             else:
                 raise ValueError(f"Atributo desconhecido: {atributo}")
             return valor
@@ -45,7 +45,7 @@ class ConfigRouter:
             return ""
 
     @staticmethod
-    def atualizar_atributo(atributo: str, novo_valor: str) -> None:
+    def update_atribute(atributo: str, novo_valor: str) -> None:
         """
         Decide qual classe filha deve lidar com a atualização do atributo e realiza a atualização.
 
@@ -58,10 +58,10 @@ class ConfigRouter:
             Exception: Qualquer erro inesperado ao tentar atualizar o atributo será logado.
         """
         try:
-            if atributo in BasicConfigManager.get_atributos():
-                BasicConfigManager.atualizar_atributo(atributo, novo_valor)
-            elif atributo in ConfigRouter.state_manager.get_atributos():
-                ConfigRouter.state_manager.atualizar_atributo(atributo, novo_valor)
+            if atributo in BasicConfigManager.get_atributes():
+                BasicConfigManager.update_atributo(atributo, novo_valor)
+            elif atributo in ConfigRouter.state_manager.get_atributes():
+                ConfigRouter.state_manager.update_atribute(atributo, novo_valor)
             else:
                 raise ValueError(f"Atributo desconhecido: {atributo}")
 
