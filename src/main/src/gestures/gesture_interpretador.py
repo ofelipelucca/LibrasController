@@ -48,8 +48,8 @@ class GestureInterpretador:
         self.gestos_libras = self.data_libras.get_gestos()
         self.libras_atributos_relevantes = self.data_libras.get_atributos_relevantes()
 
-        self.gestos_custom = self.data_custom_gestures.obter_gestos()
-        self.custom_atributos_relevantes = self.data_custom_gestures.obter_atributos_relevantes()
+        self.gestos_custom = self.data_custom_gestures.get_gestos()
+        self.custom_atributos_relevantes = self.data_custom_gestures.get_atributos_relevantes()
 
         self.libras_hand = "Right"          # A mão que o programa vai ler os sinais de Libras
         self.custom_gesture_hand = "Left"   # A mão que o programa vai ler os gestos configurados pelo usuário

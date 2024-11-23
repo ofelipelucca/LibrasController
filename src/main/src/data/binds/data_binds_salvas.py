@@ -126,15 +126,9 @@ class DataBindsSalvas:
         DataBindsSalvas.read_database()
 
         if DataBindsSalvas.do_bind_exist(nome_do_gesto) and not sobreescrever:
-            msg = f"O gesto '{nome_do_gesto}' já existe no banco de dados."
+            msg = f"O gesto '{nome_do_gesto}' ja existe no banco de dados e a autorizacao para sobreescrever eh False."
             error_logger.info(msg)
             return
-
-        if nome_do_gesto in DataBindsSalvas.binds_dict:
-            gesto_atual = DataBindsSalvas.binds_dict[nome_do_gesto]
-            data_logger.info(f"GESTO ORIGINAL: bind: {gesto_atual['bind']}; "
-                             f"tempo: {gesto_atual['tempo_pressionado']}; "
-                             f"toggle: {gesto_atual['modo_toggle']}")
 
         DataBindsSalvas.binds_dict[nome_do_gesto] = {
             "bind": bind,
@@ -142,11 +136,11 @@ class DataBindsSalvas:
             "tempo_pressionado": tempo_pressionado,
             "customizable": DataBindsSalvas.binds_dict[nome_do_gesto]["customizable"]
         }
-
+        
         gesto_atual = DataBindsSalvas.binds_dict[nome_do_gesto]
-        data_logger.info(f"GESTO EDITADO: bind: {gesto_atual['bind']}; "
-                         f"tempo: {gesto_atual['tempo_pressionado']}; "
-                         f"toggle: {gesto_atual['modo_toggle']}")
+        data_logger.info(f"Gesto salvo no database: bind: {gesto_atual['bind']}; "
+                                                    f"tempo: {gesto_atual['tempo_pressionado']}; "
+                                                    f"toggle: {gesto_atual['modo_toggle']}")
 
         DataBindsSalvas.save_database()
         

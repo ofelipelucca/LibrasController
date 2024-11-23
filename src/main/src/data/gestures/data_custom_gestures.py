@@ -11,7 +11,7 @@ class DataCustomGestures:
             with open(self.file_data_custom_gestures, 'w') as file:
                 json.dump({"data_gestos": {}, "atributos_relevantes": {}}, file)
 
-    def obter_gestos(self) -> dict:
+    def get_gestos(self) -> dict:
         """
         Retorna o dicionário de gestos do banco de dados de gestos custom.
 
@@ -30,7 +30,7 @@ class DataCustomGestures:
         except Exception as e:
             raise RuntimeError(f"Ocorreu um erro ao obter os gestos: {e}")
 
-    def obter_atributos_relevantes(self) -> dict:
+    def get_atributos_relevantes(self) -> dict:
         """
         Retorna o dicionário de atributos relevantes de cada gesto custom.
 

@@ -17,8 +17,8 @@ error_logger = Logger.configure_error_logger()
 class PyWebSocketServer:
     def __init__(self, port):
         self.port = port
-        self.data_gestos = self.load_data_gestos()
-        self.data_binds = self.load_data_binds()
+        self.data_gestos = self.load_data_gestos() # Nome dos gestos
+        self.data_binds = self.load_data_binds() # Atributos dos gestos (bind, toggle, tempo pressionado, customizable)
         self.config = ConfigRouter()
         self.camera_detection = None
 
@@ -48,13 +48,12 @@ class PyWebSocketServer:
                 await self.send_data(websocket, {"error": "Nao existe um processo de deteccao ativo no momento"})
 
             if "getAllGestos" in message:
-                self.load_data_binds()
                 data_logger.info("Retornando todos os gestos.")
+                data_logger.info(self.data_binds)
                 await self.send_data(websocket, {"allGestos": self.data_binds})
                 return
 
             if "getGestoByName" in message:
-                self.load_data_gestos()
                 nome_gesto = message["getGestoByName"]
                 data_logger.info(f"Retornando o gesto: {nome_gesto}")
                 gesto = self.data_gestos.get(nome_gesto, None)
@@ -62,10 +61,9 @@ class PyWebSocketServer:
                 return
             
             if "getCustomizableState" in message:
-                self.load_data_binds()
                 nome_gesto = message["getCustomizableState"]
                 data_logger.info(f"Retornando o estado 'customizable' do gesto: {nome_gesto}")
-                is_custom = DataBindsSalvas.get_customizable(nome_gesto)
+                is_custom = DataBindsSalvas().get_customizable(nome_gesto)
                 await self.send_data(websocket, {"customizableState": is_custom})
                 return
 
@@ -78,10 +76,12 @@ class PyWebSocketServer:
                 toggle = novo_gesto["modoToggle"]
                 tempo = novo_gesto["tempoPressionado"]
 
-                DataBindsSalvas.add_new_bind(nome, bind, tempo, toggle, sobreescrever)
+                DataBindsSalvas().add_new_bind(nome, bind, tempo, toggle, sobreescrever)
 
-                msg = f"Gesto '{nome}' salvo com sucesso: bind: {bind}; toggle: {toggle}; tempo: {tempo}; sobreescrever: {sobreescrever}"
+                msg = f"Gesto '{nome}' recebido com sucesso: bind: {bind}; toggle: {toggle}; tempo: {tempo}; sobreescrever: {sobreescrever}"
                 data_logger.info(msg)
+
+                self.data_binds = self.load_data_binds()
                 await self.send_data(websocket, {"status": "success", "message": msg})
                 return
 
@@ -138,7 +138,7 @@ class PyWebSocketServer:
         error_logger.error(f"Erro ao abrir o servidor local na porta: {self.port}")
 
     def load_data_gestos(self):
-        gestos_custom = DataCustomGestures().obter_gestos()
+        gestos_custom = DataCustomGestures().get_gestos()
         gestos_libras = DataLibrasGestures().get_gestos()
         return gestos_libras | gestos_custom
 

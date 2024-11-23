@@ -25,8 +25,8 @@
     },
     "Libras_E": {
         "bind": "e",
-        "modo_toggle": true,
-        "tempo_pressionado": 6,
+        "modo_toggle": false,
+        "tempo_pressionado": 2,
         "customizable": false
     },
     "Libras_F": {
@@ -156,15 +156,15 @@
         "customizable": false
     },
     "OK": {
-        "bind": "enter",
-        "modo_toggle": false,
+        "bind": "backspace",
+        "modo_toggle": true,
         "tempo_pressionado": 5,
         "customizable": true
     },
     "PAZ": {
         "bind": "space",
         "modo_toggle": true,
-        "tempo_pressionado": 5,
+        "tempo_pressionado": 2,
         "customizable": true
     },
     "mouse_left_click": {
