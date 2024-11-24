@@ -1,0 +1,194 @@
+{
+    "Libras_A": {
+        "bind": "a",
+        "modo_toggle": true,
+        "tempo_pressionado": 5,
+        "customizable": false
+    },
+    "Libras_B": {
+        "bind": "b",
+        "modo_toggle": false,
+        "tempo_pressionado": 5,
+        "customizable": false
+    },
+    "Libras_C": {
+        "bind": "c",
+        "modo_toggle": false,
+        "tempo_pressionado": 5,
+        "customizable": false
+    },
+    "Libras_D": {
+        "bind": "d",
+        "modo_toggle": false,
+        "tempo_pressionado": 5,
+        "customizable": false
+    },
+    "Libras_E": {
+        "bind": "e",
+        "modo_toggle": false,
+        "tempo_pressionado": 2,
+        "customizable": false
+    },
+    "Libras_F": {
+        "bind": "f",
+        "modo_toggle": false,
+        "tempo_pressionado": 5,
+        "customizable": false
+    },
+    "Libras_G": {
+        "bind": "g",
+        "modo_toggle": false,
+        "tempo_pressionado": 5,
+        "customizable": false
+    },
+    "Libras_H": {
+        "bind": "h",
+        "modo_toggle": true,
+        "tempo_pressionado": 5,
+        "customizable": false
+    },
+    "Libras_I": {
+        "bind": "i",
+        "modo_toggle": false,
+        "tempo_pressionado": 5,
+        "customizable": false
+    },
+    "Libras_J": {
+        "bind": "j",
+        "modo_toggle": true,
+        "tempo_pressionado": 5,
+        "customizable": false
+    },
+    "Libras_K": {
+        "bind": "k",
+        "modo_toggle": true,
+        "tempo_pressionado": 5,
+        "customizable": false
+    },
+    "Libras_L": {
+        "bind": "l",
+        "modo_toggle": false,
+        "tempo_pressionado": 5,
+        "customizable": false
+    },
+    "Libras_M": {
+        "bind": "m",
+        "modo_toggle": false,
+        "tempo_pressionado": 5,
+        "customizable": false
+    },
+    "Libras_N": {
+        "bind": "n",
+        "modo_toggle": false,
+        "tempo_pressionado": 5,
+        "customizable": false
+    },
+    "Libras_O": {
+        "bind": "o",
+        "modo_toggle": false,
+        "tempo_pressionado": 5,
+        "customizable": false
+    },
+    "Libras_P": {
+        "bind": "p",
+        "modo_toggle": false,
+        "tempo_pressionado": 5,
+        "customizable": false
+    },
+    "Libras_Q": {
+        "bind": "q",
+        "modo_toggle": true,
+        "tempo_pressionado": 5,
+        "customizable": false
+    },
+    "Libras_R": {
+        "bind": "r",
+        "modo_toggle": true,
+        "tempo_pressionado": 5,
+        "customizable": false
+    },
+    "Libras_S": {
+        "bind": "s",
+        "modo_toggle": false,
+        "tempo_pressionado": 5,
+        "customizable": false
+    },
+    "Libras_T": {
+        "bind": "t",
+        "modo_toggle": false,
+        "tempo_pressionado": 5,
+        "customizable": false
+    },
+    "Libras_U": {
+        "bind": "u",
+        "modo_toggle": false,
+        "tempo_pressionado": 5,
+        "customizable": false
+    },
+    "Libras_V": {
+        "bind": "v",
+        "modo_toggle": false,
+        "tempo_pressionado": 5,
+        "customizable": false
+    },
+    "Libras_W": {
+        "bind": "w",
+        "modo_toggle": false,
+        "tempo_pressionado": 5,
+        "customizable": false
+    },
+    "Libras_X": {
+        "bind": "x",
+        "modo_toggle": true,
+        "tempo_pressionado": 5,
+        "customizable": false
+    },
+    "Libras_Y": {
+        "bind": "y",
+        "modo_toggle": false,
+        "tempo_pressionado": 5,
+        "customizable": false
+    },
+    "Libras_Z": {
+        "bind": "z",
+        "modo_toggle": true,
+        "tempo_pressionado": 5,
+        "customizable": false
+    },
+    "OK": {
+        "bind": "backspace",
+        "modo_toggle": true,
+        "tempo_pressionado": 5,
+        "customizable": true
+    },
+    "PAZ": {
+        "bind": "space",
+        "modo_toggle": true,
+        "tempo_pressionado": 2,
+        "customizable": true
+    },
+    "mouse_left_click": {
+        "bind": "M1",
+        "modo_toggle": false,
+        "tempo_pressionado": 5,
+        "customizable": true
+    },
+    "mouse_right_click": {
+        "bind": "M2",
+        "modo_toggle": false,
+        "tempo_pressionado": 5,
+        "customizable": true
+    },
+    "mouse_left_hold": {
+        "bind": "m1",
+        "modo_toggle": true,
+        "tempo_pressionado": 10,
+        "customizable": true
+    },
+    "mouse_right_hold": {
+        "bind": "M2",
+        "modo_toggle": true,
+        "tempo_pressionado": 5,
+        "customizable": true
+    }
+}
