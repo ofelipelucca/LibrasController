@@ -110,7 +110,6 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
 
     const setupHandlers = (dataClient: WebSocketClient, framesClient: WebSocketClient) => {
         dataClient.handleAllGestos = (gestosList: { [key: string]: Gesto }) => {
-            console.log(gestosList);
             setGestos(gestosList || {});
         };
 
@@ -119,7 +118,9 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
 
         framesClient.handleFrame = (frameBase64: string) => {
             setFrame(frameBase64 ? `data:image/jpeg;base64,${frameBase64}` : null);
+
             framesClient.sendGetFrame();
+
             if (isLoading) setIsLoading(false);
         };
     };

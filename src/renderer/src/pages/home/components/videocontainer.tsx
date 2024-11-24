@@ -13,7 +13,7 @@ function VideoContainer({ isLoading, frame, selectedCamera, camerasDisponiveis, 
 
     return (
         <div className="videoContainer">
-            {frame == 'ERRO' ? (
+            {frame === "data:image/jpeg;base64,ERRO" ? (
                 <>
                     <img src="assets/camera_off.png" alt="Câmera desconectada" className="video" />
                 </>
