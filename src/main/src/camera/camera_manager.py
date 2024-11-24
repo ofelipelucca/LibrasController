@@ -117,7 +117,8 @@ class Camera:
         Raises:
             SystemError: Se houver erro ao capturar o frame da câmera.
         """
-        ret, frame = self.cap.read()
+        if self.cap:
+            ret, frame = self.cap.read()
         if not ret:
             error_message = "Erro ao capturar a imagem da camera."
             raise SystemError(error_message)
