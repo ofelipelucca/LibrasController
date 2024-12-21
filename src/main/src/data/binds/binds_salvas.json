@@ -67,8 +67,8 @@
     },
     "Libras_L": {
         "bind": "l",
-        "modo_toggle": false,
-        "tempo_pressionado": 5,
+        "modo_toggle": true,
+        "tempo_pressionado": 6,
         "customizable": false
     },
     "Libras_M": {

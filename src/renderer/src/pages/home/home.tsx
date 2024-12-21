@@ -131,6 +131,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
             { delay: 150, method: () => dataClient.sendGetCamera() },
             { delay: 250, method: () => dataClient.sendGetCamerasDisponiveis() },
             { delay: 350, method: () => framesClient.sendStartDetection() },
+            // { delay: 450, method: () => framesClient.sendStartCropHandMode() },
             { delay: 600, method: () => framesClient.sendGetFrame() },
         ];
 
@@ -157,11 +158,12 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
     };
 
     const handleCameraChange = async (event: React.ChangeEvent<HTMLSelectElement>) => {
+        console.log("nova camera: %s", event.target.value);
         const requests: TimedRequest[] = [
             { delay: 50, method: () => wsFramesClient?.sendStopDetection() },
-            { delay: 150, method: () => wsFramesClient?.sendSetCamera(event.target.value) },
-            { delay: 250, method: () => wsFramesClient?.sendStartDetection() },
-            { delay: 350, method: () => wsFramesClient?.sendGetFrame() },
+            { delay: 250, method: () => wsDataClient?.sendSetCamera(event.target.value) },
+            { delay: 350, method: () => wsFramesClient?.sendStartDetection() },
+            { delay: 550, method: () => wsFramesClient?.sendGetFrame() },
         ];
 
         await doRequests(requests);

@@ -1,5 +1,5 @@
-from src.gestures.gesture_reader import GestureReader
 from src.data.configs.config_router import ConfigRouter
+from src.gestures.gesture_reader import GestureReader
 from pygrabber.dshow_graph import FilterGraph
 from src.logger.logger import Logger
 import threading
@@ -24,6 +24,7 @@ class Camera:
         self.stop_flag = threading.Event()  
         self.cap: cv2.VideoCapture = None
         self.frame: cv2.Mat = None
+        self.crop_hand_mode: bool = False
 
         self.gesture_reader = GestureReader()
 
@@ -49,8 +50,11 @@ class Camera:
                         break
 
                     results = self.gesture_reader._detect_hand(frame)
-                    frame = self.draw_hand(frame, results)
-                    self.frame = frame
+                    self.frame = self.draw_hand(frame, results)
+                    
+                    if self.crop_hand_mode:
+                        self.frame = self.crop_hand(results)
+                        continue
 
                     if results.multi_hand_landmarks:
                         self.gesture_reader.read_gesture(results)
@@ -72,6 +76,25 @@ class Camera:
             self.cap = None
             self.logger.info("Camera liberada.")
         self.logger.info("Objetos e recursos limpos.")
+
+    def crop_hand(self, results) -> cv2.Mat:
+        """
+        Corta o frame nos limites da mão detectada.
+
+        Args:
+            results: Os resultados da detecção de mão.
+        
+        Returns:
+            cv2.Mat: O frame com a mão cropada ou um frame vazio se não há nenhuma lista.
+        """
+        hand_landmarks_list = self.gesture_reader.get_hand_landmarks(results)
+        if hand_landmarks_list:
+            for hand_landmarks, handedness in zip(hand_landmarks_list, results.multi_handedness):
+                mao_detectada = self.gesture_reader.classify_hand(handedness)
+                if mao_detectada == RIGHT:
+                    x_left, y_left, x_right, y_right = self.calculate_hand_rectangle(self.frame, hand_landmarks)
+                    return self.frame[y_left:y_right, x_left:x_right]
+        return self.frame
 
     def list_cameras(self) -> list[str]:
         """
@@ -138,30 +161,22 @@ class Camera:
         Raises:
             ValueError: Se a mão detectada não for 'Left' ou 'Right'.
         """
-        if results.multi_hand_landmarks:
-            for hand_landmarks, handedness in zip(results.multi_hand_landmarks, results.multi_handedness):
+        hand_landmarks_list = self.gesture_reader.get_hand_landmarks(results)
+        if hand_landmarks_list:
+            for hand_landmarks, handedness in zip(hand_landmarks_list, results.multi_handedness):
                 self.gesture_reader.mp_drawing.draw_landmarks(
                     frame,
                     hand_landmarks,
                     self.gesture_reader.mp_hands.HAND_CONNECTIONS
                 )
 
-                # Cálculo das dimensões da mão para desenhar o retângulo
-                h, w, _ = frame.shape
-                x_left = int(min([lm.x for lm in hand_landmarks.landmark]) * w) - 10
-                x_right = int(max([lm.x for lm in hand_landmarks.landmark]) * w) + 10
-                y_left = int(min([lm.y for lm in hand_landmarks.landmark]) * h) - 15
-                y_right = int(max([lm.y for lm in hand_landmarks.landmark]) * h) + 10
+                x_left, y_top, x_right, y_bottom = self.calculate_hand_rectangle(frame, hand_landmarks)
 
-                x_right = x_right if x_right - x_left > 130 else x_left + 130
-                y_right = y_right if y_right - y_left > 130 else y_left + 130
+                cv2.rectangle(frame, (x_left, y_top), (x_right, y_bottom), (0, 0, 0), 1)
 
-                cv2.rectangle(frame, (x_left, y_left), (x_right, y_right), (0, 0, 0), 1)
-
-                # Adiciona o texto sobre o retângulo
                 text_x = x_left + 3
-                text_y = y_left - 3
-                cv2.rectangle(frame, (x_left, y_left - 15), (x_right, y_left), (0, 0, 0), -1)  # Fundo do texto
+                text_y = y_top - 3
+                cv2.rectangle(frame, (x_left, y_top - 15), (x_right, y_top), (0, 0, 0), -1)  
 
                 mao_detectada = self.gesture_reader.classify_hand(handedness)
 
@@ -177,6 +192,28 @@ class Camera:
                     self.nome_gesto_direita = ConfigRouter().read_atribute("nome_gesto_direita")
                     cv2.putText(frame, self.nome_gesto_direita, (text_x, text_y), FONT, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
         return frame
+        
+    def calculate_hand_rectangle(self, frame: cv2.Mat, hand_landmarks) -> tuple:
+        """
+        Calcula os limites do retângulo ao redor da mão detectada.
+
+        Args:
+            frame (cv2.Mat): O frame atual.
+            hand_landmarks: Os landmarks da mão detectada.
+
+        Returns:
+            tuple: Coordenadas (x_left, y_top, x_right, y_bottom) do retângulo.
+        """
+        h, w, _ = frame.shape
+        crop_padding = 0.15
+
+        x_left = int(min([lm.x for lm in hand_landmarks.landmark]) * w)
+        x_right = int(max([lm.x for lm in hand_landmarks.landmark]) * w)
+        
+        y_top = int(min([lm.y for lm in hand_landmarks.landmark]) * h) 
+        y_bottom = int(max([lm.y for lm in hand_landmarks.landmark]) * h)
+
+        return x_left, y_top, x_right, y_bottom 
 
     def show_frame(self, frame: cv2.Mat) -> None:
         """

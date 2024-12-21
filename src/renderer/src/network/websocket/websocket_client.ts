@@ -177,6 +177,14 @@ class WebSocketClient {
         this.send({ stopDetection: true });
     }
 
+    public sendStartCropHandMode() {
+        this.send({ startCropHandMode: true });
+    }
+
+    public sendStopCropHandMode() {
+        this.send({ stopCropHandMode: true });
+    }
+
     public sendGetAllGestos() {
         this.send({ getAllGestos: true });
     }

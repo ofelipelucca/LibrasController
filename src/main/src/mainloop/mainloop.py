@@ -1,4 +1,4 @@
-from src.websocket.websocket_server import PyWebSocketServer
+from src.data_websocket.data_websocket_server import PyWebSocketServer
 from src.logger.logger import Logger
 import threading
 import asyncio
@@ -16,6 +16,43 @@ class MainLoop:
         self.frames_server_thread = None
         self.frames_server_loop = None
 
+    def start(self) -> None:
+        """
+        Inicia os servidores WebSocket em threads separadas.
+        """
+        try:
+            self.data_server_thread = threading.Thread(target=self.start_server, 
+                                                       args=(self.data_server, "data_server_loop"))
+            self.data_server_thread.start()
+
+            self.frames_server_thread = threading.Thread(target=self.start_server, 
+                                                       args=(self.frames_server, "frames_server_loop"))
+            self.frames_server_thread.start()
+
+        except Exception as e:
+            error_message = f"Erro durante a execução dos servidores WebSocket: {e}"
+            self.logger.error(error_message)
+            raise RuntimeError(error_message)
+
+    def stop(self) -> None:
+        """
+        Para os servidores WebSocket e espera que as threads sejam encerradas.
+        """
+        self.logger.info("Parando o MainLoop e servidores...")
+
+        self.stop_flag.set()
+
+        self.logger.info("Esperando servidores pararem...")
+        
+        if self.data_server_thread:
+            self.logger.info("Esperando servidor de data...")
+            self.data_server_thread.join()
+
+        if self.frames_server_thread:
+            self.logger.info("Esperando servidor de frames...")
+            self.frames_server_thread.join()
+
+        self.logger.info("MainLoop e servidores parados.")
 
     def start_server(self, server: PyWebSocketServer, server_loop_var_name: str):
         """
@@ -38,44 +75,7 @@ class MainLoop:
             raise RuntimeError(error_message)
         finally:
             loop.close()
-
-    def start(self) -> None:
-        """
-        Inicia os servidores WebSocket em threads separadas.
-        """
-        try:
-            self.data_server_thread = threading.Thread(target=self.start_server, 
-                                                       args=(self.data_server, "data_server_loop"))
-            self.data_server_thread.start()
-
-            self.frames_server_thread = threading.Thread(target=self.start_server, 
-                                                         args=(self.frames_server, "frames_server_loop"))
-            self.frames_server_thread.start()
-
-        except Exception as e:
-            error_message = f"Erro durante a execução dos servidores WebSocket: {e}"
-            self.logger.error(error_message)
-            raise RuntimeError(error_message)
-
-    def stop(self) -> None:
-        """
-        Para os servidores WebSocket e espera que as threads sejam encerradas.
-        """
-        self.logger.info("Parando o MainLoop e servidores...")
-
-        self.stop_flag.set()
-
-        self.logger.info("Esperando servidores pararem...")
-        
-        if self.data_server_thread:
-            self.logger.info("Esperando servidor de data...")
-            self.data_server_thread.join()
-        if self.frames_server_thread:
-            self.logger.info("Esperando servidor de frames...")
-            self.frames_server_thread.join()
-
-        self.logger.info("MainLoop e servidores parados.")
-
+            
     def __del__(self):
         """Método chamado ao destruir a instância da classe."""
         self.stop()

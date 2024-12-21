@@ -1,6 +1,5 @@
 from src.mainloop.mainloop import MainLoop
 from src.logger.logger import Logger
-import ctypes   
 import asyncio  
 import sys
 
@@ -9,9 +8,6 @@ error_logger = Logger.configure_error_logger()
 
 async def main(data_port, frames_port) -> None:
     logger.info("Iniciando LibrasController...")
-
-    app_id = 'felipelucca.libras.controller.1.0'
-    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(app_id)
 
     try:
         main_loop = MainLoop(data_port, frames_port)
@@ -26,6 +22,6 @@ async def main(data_port, frames_port) -> None:
 
 if __name__ == "__main__":
     port1 = int(sys.argv[1])  
-    port2 = int(sys.argv[2])
+    port2 = int(sys.argv[2])  
     
     asyncio.run(main(port1, port2))

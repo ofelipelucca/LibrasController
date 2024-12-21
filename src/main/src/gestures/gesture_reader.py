@@ -83,6 +83,20 @@ class GestureReader:
             self.gestos_logger.error(error_message)
             self.error_logger.error(error_message)
 
+    def get_hand_landmarks(self, results) -> list:
+        """
+        Retorna uma lista com os landmarks das mãos detectadas.
+
+        Args:
+            results: Os resultados da detecção de mão.
+
+        Returns:
+            list: Lista contendo os landmarks das mãos detectadas.
+        """
+        if results.multi_hand_landmarks:
+            return results.multi_hand_landmarks
+        return []
+
     def _filter_hand(self, results, mao_para_filtrar: str):
         """
         Filtra as mãos desejadas dentro de `results` e remove aquelas que não correspondem ao filtro.

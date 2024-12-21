@@ -82,18 +82,12 @@ const GestoDetalhes: React.FC<GestoDetalhesProps> = ({ onNavigate, nome_do_gesto
     };
 
     const handleTempoPressionadoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const value = Math.max(1, Math.min(60, Number(event.target.value))); 
+        const value = Math.max(1, Math.min(60, Number(event.target.value)));
         setTempoPressionado(value);
     };
 
     const handleSalvar = () => {
         if (wsDataClient) {
-            console.log("Estado Atual:");
-            console.log(`Nome: ${nome_do_gesto}`);
-            console.log(`Bind: ${bind}`);
-            console.log(`Toggle: ${toggle}`);
-            console.log(`Tempo Pressionado: ${tempoPressionado}`);
-
             const novoGesto: GestoEditado = {
                 nome: nome_do_gesto || "Sem Nome",
                 bind,

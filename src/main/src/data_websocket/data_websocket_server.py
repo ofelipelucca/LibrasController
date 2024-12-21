@@ -43,13 +43,29 @@ class PyWebSocketServer:
                 if self.camera_detection: 
                     self.camera_detection.stop()
                     self.camera_detection = None
-                    await self.send_data(websocket, {"status": "success", "message": msg})
+                await self.send_data(websocket, {"status": "success", "message": msg})
+                return
+
+            if "startCropHandMode" in message:
+                msg = "Iniciando o modo de crop_hand."
+                logger.info(msg)
+                if not self.camera_detection:
+                    await self.send_data(websocket, {"error": "Nao existe um processo de deteccao ativo no momento."})    
                     return
-                await self.send_data(websocket, {"error": "Nao existe um processo de deteccao ativo no momento"})
+                self.camera_detection.crop_hand_mode = True
+                await self.send_data(websocket, {"status": "success", "message": msg})
+                return
+            
+            if "stopCropHandMode" in message:
+                msg = "Encerrando o modo de crop_hand."
+                logger.info(msg)
+                if self.camera_detection:
+                    self.camera_detection.crop_hand_mode = False
+                await self.send_data(websocket, {"status": "success", "message": msg})  
+                return
 
             if "getAllGestos" in message:
                 data_logger.info("Retornando todos os gestos.")
-                data_logger.info(self.data_binds)
                 await self.send_data(websocket, {"allGestos": self.data_binds})
                 return
 
@@ -106,6 +122,7 @@ class PyWebSocketServer:
                 cameras = self.camera_detection.list_cameras()
                 if cameras: await self.send_data(websocket, {"cameras_disponiveis": cameras})
                 else: await self.send_data(websocket, {"error": "Nao foi possivel retornar as cameras disponiveis."})
+                return
             
             if "getFrame" in message: 
                 if self.camera_detection: 
@@ -118,6 +135,7 @@ class PyWebSocketServer:
                     await self.send_data(websocket, {"frame": "ERRO", "message": "O frame ainda esta vazio."})
                     return
                 await self.send_data(websocket, {"error": "Nao foi possivel capturar o frame."})
+                return
 
     async def send_data(self, websocket, data):
         json_data = json.dumps(data)
