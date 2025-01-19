@@ -10,7 +10,6 @@ async function initializeApp() {
   try {
     const data_port = await findAvailablePort(8000, 8200);
     const frames_port = await findAvailablePort(8201, 8400);
-
     createMainWindow();
     startPython(data_port, frames_port);
 
@@ -72,15 +71,15 @@ let ports = {
 };
 
 ipcMain.handle('getDataPort', () => {
-  return ports.data_port; 
+  return ports.data_port;
 });
 
 ipcMain.handle('getFramesPort', () => {
-  return ports.frames_port; 
+  return ports.frames_port;
 });
 
 ipcMain.handle('getPort', () => {
-  return ports; 
+  return ports;
 });
 
 app.whenReady().then(() => {
