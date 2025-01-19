@@ -3,39 +3,39 @@ interface Gesto {
     tempo_pressionado: number;
 }
 
-class WebSocketClient {
+export default class WebSocketClient {
     public socket: WebSocket | null = null;
     public uri: string;
     public isConnected: boolean = false;
-    private reconnectAttempts: number = 0;
-    private maxReconnectAttempts: number = 5;
-    private pingIntervalId: any = null;
-    private PING_INTERVAL: number = 100000;
+    protected reconnectAttempts: number = 0;
+    protected maxReconnectAttempts: number = 5;
+    protected pingIntervalId: any = null;
+    protected PING_INTERVAL: number = 100000;
 
     constructor(uri: string) {
         this.uri = uri;
         this.connect();
     }
 
-    private connect() {
+    protected connect() {
         this.socket = new WebSocket(this.uri);
         console.log("Tentando conectar ao servidor:", this.uri);
         this.setupListeners();
     }
 
     public close() {
-        if (this.socket) {
-            console.log('Fechando a conexão com o servidor:', this.uri);
-            this.socket.close();
-            this.socket = null;
-        } else {
-            console.log('O socket não está aberto.')
+        if (!this.socket) {
+            console.log('O socket não está aberto.');
+            return;
         }
+        console.log('Fechando a conexão com o servidor:', this.uri);
+        this.socket.close();
+        this.socket = null;
         this.stopHeartbeat();
         this.reconnectAttempts = 0;
     }
 
-    private setupListeners() {
+    protected setupListeners() {
         if (!this.socket) return;
 
         this.socket.onopen = () => {
@@ -122,9 +122,11 @@ class WebSocketClient {
         });
     }
 
-    private handleMessage(data: string) {
+    protected handleMessage(data: string) {
         try {
             const message = JSON.parse(data);
+
+            console.log(message);
 
             if (message.status) {
                 console.log(`Status: ${message.message}`);
@@ -138,24 +140,20 @@ class WebSocketClient {
                 console.log('Pong recebido.');
             }
 
-            if (message.cameras_disponiveis) {
-                this.handleCameraList(message.cameras_disponiveis);
+            if (message.camerasDisponiveis) {
+                this.handleCameraList(message.camerasDisponiveis);
             }
 
             if (message.allGestos) {
                 this.handleAllGestos(message.allGestos);
             }
 
-            if (message.getGestoByName) {
-                this.handleGesto(message.getGestoByName);
+            if (message.gesto) {
+                this.handleGesto(message.gesto);
             }
 
-            if (message.camera_selecionada) {
-                this.handleCameraSelecionada(message.camera_selecionada);
-            }
-
-            if (message.frame) {
-                this.handleFrame(message.frame);
+            if (message.cameraSelecionada) {
+                this.handleCameraSelecionada(message.cameraSelecionada);
             }
         } catch (e) {
             console.error('Falha no JSON:', e);
@@ -167,78 +165,70 @@ class WebSocketClient {
     public handleGesto(gesto: Gesto) { }
     public handleCustomizableState(is_custom: boolean) { }
     public handleCameraSelecionada(camera_selecionada: string) { }
-    public handleFrame(frame: string) { }
 
     public sendStartDetection() {
-        this.send({ startDetection: true });
+        this.send({ START_DETECTION: true });
     }
 
     public sendStopDetection() {
-        this.send({ stopDetection: true });
+        this.send({ STOP_DETECTION: true });
+    }
+
+    public sendStartFrameStream() {
+        this.send({ START_FRAMES_STREAM: true });
+    }
+
+    public sendStopFramesStream() {
+        this.send({ STOP_FRAMES_STREAM: true });
     }
 
     public sendStartCropHandMode() {
-        this.send({ startCropHandMode: true });
+        this.send({ START_CROP_HAND_MODE: true });
     }
 
     public sendStopCropHandMode() {
-        this.send({ stopCropHandMode: true });
+        this.send({ STOP_CROP_HAND_MODE: true });
     }
 
     public sendGetAllGestos() {
-        this.send({ getAllGestos: true });
+        this.send({ GET_ALL_GESTOS: true });
     }
 
     public getGestoByName(nome: string) {
-        this.send({ getGestoByName: nome });
+        this.send({ GET_GESTO_BY_NAME: nome });
     }
 
     public sendGetCustomizableState(nome: string) {
-        this.send({ getCustomizableState: nome });
+        this.send({ GET_CUSTOMIZABLE_STATE: nome });
     }
 
     public sendSaveGesto(gesto: object, sobreescrever: boolean) {
-        this.send({ saveGesto: gesto, sobreescrever });
+        this.send({ SAVE_GESTO: gesto, sobreescrever });
     }
 
     public sendSetCamera(nomeCamera: string) {
-        this.send({ setCamera: nomeCamera });
+        this.send({ SET_CAMERA: nomeCamera });
     }
 
     public sendGetCamera() {
-        this.send({ getCamera: true });
+        this.send({ GET_CAMERA: true });
     }
 
     public sendGetCamerasDisponiveis() {
-        this.send({ getCamerasDisponiveis: true });
+        this.send({ GET_CAMERAS_DISPONIVEIS: true });
     }
 
-    public sendGetFrame() {
-        this.send({ getFrame: true });
-    }
-
-    private send(data: object) {
+    protected send(data: object) {
         if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-            this.socket.send(JSON.stringify(data));
+            const message = JSON.stringify(data)
+            console.log("ENVIANDO:", message)
+            this.socket.send(message);
         } else {
             console.warn('WebSocket não está aberto. Mensagem não enviada:', data);
         }
     }
 
-    private tryReconnect() {
-        if (this.reconnectAttempts < this.maxReconnectAttempts) {
-            const timeout = Math.pow(2, this.reconnectAttempts) * 1000;
-            setTimeout(() => {
-                this.reconnectAttempts++;
-                console.log(`Tentando reconectar... Tentativa ${this.reconnectAttempts}`);
-                this.connect();
-            }, timeout);
-        } else {
-            console.error(`Falha ao reconectar após ${this.reconnectAttempts} tentativas.`);
-        }
-    }
-
-    private startHeartbeat() {
+    protected startHeartbeat() {
         this.pingIntervalId = setInterval(() => {
             if (this.socket && this.socket.readyState === WebSocket.OPEN) {
                 this.send({ ping: true });
@@ -247,12 +237,10 @@ class WebSocketClient {
         }, this.PING_INTERVAL);
     }
 
-    private stopHeartbeat() {
+    protected stopHeartbeat() {
         if (this.pingIntervalId) {
             clearInterval(this.pingIntervalId);
             this.pingIntervalId = null;
         }
     }
 }
-
-export default WebSocketClient;
