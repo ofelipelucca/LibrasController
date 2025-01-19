@@ -1,4 +1,4 @@
-function ErrorContainer({ error, connectWebSocket }: any) {
+export default function ErrorContainer({ error, connectWebSocket }: any) {
     if (!error) return null;
     return (
         <div className="errorContainer">
@@ -7,5 +7,3 @@ function ErrorContainer({ error, connectWebSocket }: any) {
         </div>
     );
 }
-
-export default ErrorContainer;

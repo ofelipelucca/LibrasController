@@ -1,6 +1,6 @@
 const net = require('net');
 
-async function findAvailablePort(start, end) {
+module.exports = async function findAvailablePort(start, end) {
     return new Promise((resolve, reject) => {
         const port = start;
         const server = net.createServer();
@@ -16,5 +16,3 @@ async function findAvailablePort(start, end) {
         });
     });
 }
-
-module.exports = findAvailablePort;

@@ -71,8 +71,7 @@ const SelectCamera: React.FC<SelectCameraProps> = ({ onNavigate }) => {
             return;
         }
 
-        const uri = `http://localhost:${ports.data_port}`;
-        const client = new WebSocketClient(uri);
+        const client = new WebSocketClient(`http://localhost:${ports.data_port}`)
 
         setIsLoading(true);
 
@@ -83,8 +82,6 @@ const SelectCamera: React.FC<SelectCameraProps> = ({ onNavigate }) => {
             }
             setWsClient(client);
             setError(false);
-
-            console.log("Conexão bem-sucedida.");
 
             client.sendGetCamerasDisponiveis();
 
