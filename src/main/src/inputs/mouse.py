@@ -85,7 +85,7 @@ class Mouse(Device):
         Logger.configure_input_logger().info(f"Simulacao de clique: '{button}' ({event_type}) realizado com sucesso.")
 
     @staticmethod
-    def _move_mouse_absolute(x: int, y: int, min_diff: int = 3) -> None:
+    def _move_mouse_absolute(x: int, y: int, min_diff: int = 2) -> None:
         """
         Move o cursor do mouse para as coordenadas absolutas especificadas.
 
@@ -113,7 +113,7 @@ class Mouse(Device):
                 Logger.configure_input_logger().info(f"Cursor movido para ({x_novo}, {y_novo}) com sucesso.")
 
     @staticmethod
-    def _move_mouse_relative(x: int, y: int, cursor_speed: int = 2) -> None:
+    def _move_mouse_relative(x: int, y: int, cursor_speed: int = 10) -> None:
         """
         Cria o input que move o cursor do mouse considerando a posição atual do mouse.
 
