@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './home.css';
 import WebSocketClient from 'renderer/src/network/websocket/websocket_client';
+import WebSocketFrames from 'renderer/src/network/websocket/websocket_frames';
 import GestosContainer from './components/gestoscontainer';
 import VideoContainer from './components/videocontainer';
 import ErrorContainer from './components/errorcontainer';
@@ -11,7 +12,8 @@ interface HomeProps {
 
 const Home: React.FC<HomeProps> = ({ onNavigate }) => {
     const [wsDataClient, setWsDataClient] = useState<WebSocketClient | null>(null);
-    const [wsFramesClient, setWsFramesClient] = useState<WebSocketClient | null>(null);
+    const [wsFramesClient, setWsFramesClient] = useState<WebSocketFrames | null>(null);
+    const [frame, setFrame] = useState<string | null>(null);
     const [ports, setPorts] = useState<Ports | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [loadingText, setLoadingText] = useState('Carregando...');
@@ -19,7 +21,6 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
     const [gestos, setGestos] = useState<{ [nome_do_gesto: string]: Gesto }>({});
     const [camerasDisponiveis, setCamerasDisponiveis] = useState<string[]>([]);
     const [selectedCamera, setSelectedCamera] = useState('');
-    const [frame, setFrame] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchPorts = async () => {
@@ -43,16 +44,73 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
 
     useEffect(() => {
         if (ports) {
-            connectWebSocket(ports);
+            connectWebSockets(ports);
         }
     }, [ports]);
+
+    const connectWebSockets = async (ports: Ports) => {
+        setLoadingText('Abrindo a câmera.');
+        setIsLoading(true);
+
+        try {
+            const client_data = new WebSocketClient(`http://localhost:${ports.data_port}`);
+            const dataConnection = await client_data.waitForConnection();
+
+            const client_frames = new WebSocketFrames(`http://localhost:${ports.frames_port}`);
+            const framesConnection = await client_frames.waitForConnection();
+
+            if (!framesConnection || !dataConnection) throw new Error('Falha na conexão');
+
+            setWsDataClient(client_data);
+            setWsFramesClient(client_frames);
+        } catch (err) {
+            console.error('Erro ao conectar:', err);
+            handleErrorState();
+        }
+    };
 
     useEffect(() => {
         if (wsDataClient && wsFramesClient) {
             setupHandlers(wsDataClient, wsFramesClient);
-            fetchInitialData(wsDataClient, wsFramesClient);
+            fetchInitialData(wsDataClient);
         }
     }, [wsDataClient, wsFramesClient]);
+
+    const closeClients = async () => {
+        console.log("Fechando client de data.");
+        wsDataClient?.sendStopFramesStream();
+        wsDataClient?.sendStopDetection();
+        wsDataClient?.close();
+    };
+
+    const setupHandlers = (dataClient: WebSocketClient, framesClient: WebSocketFrames) => {
+        dataClient.handleAllGestos = (gestosList: { [key: string]: Gesto }) => {
+            setGestos({ ...gestosList });
+        };
+        dataClient.handleCameraSelecionada = setSelectedCamera;
+        dataClient.handleCameraList = setCamerasDisponiveis;
+        framesClient.handleFrame = setFrame;
+    };
+
+    const fetchInitialData = async (dataClient: WebSocketClient) => {
+        console.log("Enviando requests iniciais...");
+        const requests: TimedRequest[] = [
+            { delay: 50, method: () => dataClient.sendGetAllGestos() },
+            { delay: 150, method: () => dataClient.sendGetCamera() },
+            { delay: 250, method: () => dataClient.sendGetCamerasDisponiveis() },
+            { delay: 350, method: () => dataClient.sendStartDetection() },
+            { delay: 450, method: () => dataClient.sendStartFrameStream() },
+        ];
+
+        await doRequests(requests);
+    };
+
+    const doRequests = async (requests: TimedRequest[]) => {
+        for (const req of requests) {
+            await new Promise<void>(resolve => setTimeout(resolve, req.delay));
+            req.method();
+        }
+    };
 
     useEffect(() => {
         let intervalId: NodeJS.Timeout;
@@ -78,78 +136,14 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
         return () => clearInterval(intervalId);
     }, [isLoading, loadingText]);
 
-
-    const connectWebSocket = async (ports: Ports) => {
-        setLoadingText('Abrindo a câmera.');
-        setIsLoading(true);
-
-        try {
-            const client_data = new WebSocketClient(`http://localhost:${ports.data_port}`);
-            const client_frames = new WebSocketClient(`http://localhost:${ports.frames_port}`);
-
-            const dataConnection = await client_data.waitForConnection();
-            const framesConnection = await client_frames.waitForConnection();
-
-            if (!dataConnection || !framesConnection) throw new Error('Falha na conexão.');
-
-            setWsDataClient(client_data);
-            setWsFramesClient(client_frames);
-        } catch (err) {
-            console.error('Erro ao conectar:', err);
-            handleErrorState();
-        }
-    };
-
-    const closeClients = async () => {
-        wsDataClient?.close();
-        if (wsFramesClient) {
-            wsFramesClient.sendStopDetection();
-            wsFramesClient.close();
-        }
-    };
-
-    const setupHandlers = (dataClient: WebSocketClient, framesClient: WebSocketClient) => {
-        dataClient.handleAllGestos = (gestosList: { [key: string]: Gesto }) => {
-            setGestos(gestosList || {});
-        };
-
-        dataClient.handleCameraSelecionada = setSelectedCamera;
-        dataClient.handleCameraList = setCamerasDisponiveis;
-
-        framesClient.handleFrame = (frameBase64: string) => {
-            setFrame(frameBase64 ? `data:image/jpeg;base64,${frameBase64}` : null);
-
-            framesClient.sendGetFrame();
-
-            if (isLoading) setIsLoading(false);
-        };
-    };
-
-    const fetchInitialData = async (dataClient: WebSocketClient, framesClient: WebSocketClient) => {
-        const requests: TimedRequest[] = [
-            { delay: 50, method: () => dataClient.sendGetAllGestos() },
-            { delay: 150, method: () => dataClient.sendGetCamera() },
-            { delay: 250, method: () => dataClient.sendGetCamerasDisponiveis() },
-            { delay: 350, method: () => framesClient.sendStartDetection() },
-            // { delay: 450, method: () => framesClient.sendStartCropHandMode() },
-            { delay: 600, method: () => framesClient.sendGetFrame() },
-        ];
-
-        await doRequests(requests);
-    };
-
-    const doRequests = async (requests: TimedRequest[]) => {
-        for (const req of requests) {
-            await new Promise<void>(resolve => setTimeout(resolve, req.delay));
-            req.method();
-        }
-    };
+    useEffect(() => {
+        if (frame && isLoading) setIsLoading(false);
+    }, [frame]);
 
     const handleErrorState = () => {
         setError(true);
         setIsLoading(false);
         setWsDataClient(null);
-        setWsFramesClient(null);
     };
 
     const handleNavigate = async (page: 'gestocustom' | 'gestodetalhes', nome_do_gesto?: string, gesto?: Gesto) => {
@@ -157,16 +151,8 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
         onNavigate(page, nome_do_gesto, gesto);
     };
 
-    const handleCameraChange = async (event: React.ChangeEvent<HTMLSelectElement>) => {
-        console.log("nova camera: %s", event.target.value);
-        const requests: TimedRequest[] = [
-            { delay: 50, method: () => wsFramesClient?.sendStopDetection() },
-            { delay: 250, method: () => wsDataClient?.sendSetCamera(event.target.value) },
-            { delay: 350, method: () => wsFramesClient?.sendStartDetection() },
-            { delay: 550, method: () => wsFramesClient?.sendGetFrame() },
-        ];
-
-        await doRequests(requests);
+    const handleCameraChange = () => {
+        // TODO
     };
 
     return (
@@ -178,15 +164,14 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
                     mostrarDetalhesGesto={(nome_do_gesto: string, gesto: Gesto) => handleNavigate('gestodetalhes', nome_do_gesto, gesto)}
                 />
                 <VideoContainer
-                    isLoading={isLoading}
                     frame={frame}
+                    isLoading={isLoading}
                     selectedCamera={selectedCamera}
                     camerasDisponiveis={camerasDisponiveis}
                     handleCameraChange={handleCameraChange}
-                    error={error}
                     loadingText={loadingText}
                 />
-                <ErrorContainer error={error} connectWebSocket={() => connectWebSocket(ports!)} />
+                <ErrorContainer error={error} connectWebSocket={() => connectWebSockets(ports!)} />
             </div>
         </div>
     );
