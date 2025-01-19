@@ -3,8 +3,9 @@ from src.gestures.gesture_reader import GestureReader
 from pygrabber.dshow_graph import FilterGraph
 from src.logger.logger import Logger
 import threading
-import asyncio 
 import pythoncom  
+import traceback
+import time
 import cv2
 
 LEFT = "Left"
@@ -37,32 +38,42 @@ class Camera:
         self.logger = Logger.configure_application_logger()
 
     async def start(self) -> None:
-        self.logger.info("Processo de deteccao iniciado.")
-
         camera_nome = ConfigRouter.read_atribute("camera_selecionada")
+        self.logger.info("Processo de deteccao iniciado.")
+        self.logger.info(f"stop_flag inicial: {self.stop_flag.is_set()}")
         try:
             self.select_camera_by_name(camera_nome)
-            
+
             def detection_loop():
-                while not self.stop_flag.is_set():
-                    frame = self.read_frame()
-                    if frame is None:
-                        break
+                try:
+                    self.logger.info("Iniciando loop de deteccao.")
+                    while not self.stop_flag.is_set():
+                        unready_frame = self.read_frame()
+                        if unready_frame is None:
+                            time.sleep(0.01) 
+                            continue
 
-                    results = self.gesture_reader._detect_hand(frame)
-                    self.frame = self.draw_hand(frame, results)
-                    
-                    if self.crop_hand_mode:
-                        self.frame = self.crop_hand(results)
-                        continue
+                        results = self.gesture_reader._detect_hand(unready_frame)
+                        unready_frame = self.draw_hand(unready_frame, results)
 
-                    if results.multi_hand_landmarks:
-                        self.gesture_reader.read_gesture(results)
+                        if self.crop_hand_mode:
+                            unready_frame = self.crop_hand(results)
+                            continue
 
-            asyncio.create_task(asyncio.to_thread(detection_loop))
+                        self.frame = unready_frame
+
+                        if results.multi_hand_landmarks:
+                            self.gesture_reader.read_gesture(results)
+                    self.logger.info("Saindo do loop de deteccao.")
+                except Exception as e:
+                    self.logger.error(f"Erro no loop de deteccao: {traceback.format_exc()}")
+
+            detection_thread = threading.Thread(target=detection_loop)
+            detection_thread.daemon = True  
+            detection_thread.start()
 
         except Exception as e:
-            error_message = f"Erro durante a captura de video: {e}"
+            error_message = f"Erro durante a captura de video: {traceback.format_exc()}"
             self.logger.error(error_message)
             raise RuntimeError(error_message)
 
@@ -74,7 +85,7 @@ class Camera:
         if self.cap:
             self.cap.release()
             self.cap = None
-            self.logger.info("Camera liberada.")
+        self.logger.info("Camera liberada.")
         self.logger.info("Objetos e recursos limpos.")
 
     def crop_hand(self, results) -> cv2.Mat:
@@ -124,7 +135,9 @@ class Camera:
         if camera_nome in dispositivos_video:
             index = dispositivos_video.index(camera_nome)
             self.cap = cv2.VideoCapture(index)
-            self.logger.info(f"Camera selecionada: {camera_nome}")
+            if not self.cap.isOpened():
+                raise ValueError(f"Não foi possível abrir a câmera: {camera_nome}")
+            self.logger.info(f"Camera selecionada e aberta: {camera_nome}")
         else:
             error_message = f"Camera '{camera_nome}' nao encontrada."
             self.logger.error(error_message)
@@ -140,7 +153,7 @@ class Camera:
         Raises:
             SystemError: Se houver erro ao capturar o frame da câmera.
         """
-        if self.cap:
+        if self.is_camera_opened():
             ret, frame = self.cap.read()
         if not ret:
             error_message = "Erro ao capturar a imagem da camera."
