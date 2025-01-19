@@ -1,4 +1,4 @@
-function GestosContainer({ gestos, adicionarGesto, mostrarDetalhesGesto }: any) {
+export default function GestosContainer({ gestos, adicionarGesto, mostrarDetalhesGesto }: any) {
     return (
         <div className="gestosContainer">
             <button onClick={adicionarGesto} className="addButton">
@@ -16,5 +16,3 @@ function GestosContainer({ gestos, adicionarGesto, mostrarDetalhesGesto }: any) 
         </div>
     );
 }
-
-export default GestosContainer;
