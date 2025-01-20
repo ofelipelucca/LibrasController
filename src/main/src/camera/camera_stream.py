@@ -39,7 +39,7 @@ class CameraStream:
             frame = self.get_frame()
             if frame == "": continue
             await self.frames_sender.send_frame(frame)
-            time.sleep(0.016)
+            time.sleep(0.001)
 
     def get_frame(self) -> str:
         """Retorna o frame atual convertido para jpeg"""

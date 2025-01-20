@@ -40,7 +40,6 @@ class Camera:
     async def start(self) -> None:
         camera_nome = ConfigRouter.read_atribute("camera_selecionada")
         self.logger.info("Processo de deteccao iniciado.")
-        self.logger.info(f"stop_flag inicial: {self.stop_flag.is_set()}")
         try:
             self.select_camera_by_name(camera_nome)
 
@@ -185,11 +184,8 @@ class Camera:
 
                 x_left, y_top, x_right, y_bottom = self.calculate_hand_rectangle(frame, hand_landmarks)
 
-                cv2.rectangle(frame, (x_left, y_top), (x_right, y_bottom), (0, 0, 0), 1)
-
-                text_x = x_left + 3
-                text_y = y_top - 3
-                cv2.rectangle(frame, (x_left, y_top - 15), (x_right, y_top), (0, 0, 0), -1)  
+                # Quadrado em volta da mão
+                cv2.rectangle(frame, (x_left, y_top), (x_right, y_bottom), (0, 0, 0), 1)  
 
                 mao_detectada = self.gesture_reader.classify_hand(handedness)
 
@@ -198,12 +194,27 @@ class Camera:
                     self.logger.error(error_message)
                     raise ValueError(error_message)
 
-                if mao_detectada == LEFT:
-                    self.nome_gesto_esquerda = ConfigRouter().read_atribute("nome_gesto_esquerda")
-                    cv2.putText(frame, self.nome_gesto_esquerda, (text_x, text_y), FONT, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
-                if mao_detectada == RIGHT:
-                    self.nome_gesto_direita = ConfigRouter().read_atribute("nome_gesto_direita")
-                    cv2.putText(frame, self.nome_gesto_direita, (text_x, text_y), FONT, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+                gesture_text = (
+                    ConfigRouter().read_atribute("nome_gesto_esquerda") if mao_detectada == LEFT
+                    else ConfigRouter().read_atribute("nome_gesto_direita")
+                )
+
+                text_size = cv2.getTextSize(gesture_text, FONT, 0.5, 1)[0]  # [width, height]
+                text_width = max(text_size[0] + 6, x_right - x_left)  
+                text_height = text_size[1] + 4  
+
+                background_left = x_left + (x_right - x_left - text_width) // 2
+                background_right = background_left + text_width
+                background_top = y_top - text_height - 3
+                background_bottom = y_top
+
+                # Background do texto
+                cv2.rectangle(frame, (background_left, background_top), (background_right, background_bottom), (0, 0, 0), -1)
+
+                text_x = background_left + 3  
+                text_y = background_bottom - 3  
+                cv2.putText(frame, gesture_text, (text_x, text_y), FONT, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+
         return frame
         
     def calculate_hand_rectangle(self, frame: cv2.Mat, hand_landmarks) -> tuple:
