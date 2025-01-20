@@ -1,6 +1,6 @@
+from src.websockets.frames_websocket.frames_websocket import FramesWebsocketServer
 from src.data.gestures.data_libras_gestures import DataLibrasGestures
 from src.data.gestures.data_custom_gestures import DataCustomGestures 
-from src.websockets.frames_websocket.frames_websocket import FramesWebsocketServer
 from src.data.binds.data_binds_salvas import DataBindsSalvas
 from src.data.configs.config_router import ConfigRouter
 from src.camera.camera_stream import CameraStream
@@ -129,7 +129,7 @@ class DataWebsocketServer(WebSocket):
                     return
 
                 if "SET_CAMERA" in message:
-                    camera_name = message["setCamera"]
+                    camera_name = message["SET_CAMERA"]
                     msg = f"Camera '{camera_name}' atualizada com sucesso."
                     self.data_logger.info(msg)
                     self.config.update_atribute("camera_selecionada", camera_name)

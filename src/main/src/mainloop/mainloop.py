@@ -1,4 +1,4 @@
-from src.websockets.data_websocket.data_websocket_server import DataWebsocketServer
+from src.websockets.data_websocket.data_websocket import DataWebsocketServer
 from src.websockets.frames_websocket.frames_websocket import FramesWebsocketServer 
 from src.logger.logger import Logger
 import asyncio
