@@ -63,7 +63,7 @@ class WebSocket:
         async for message in websocket:
             try:
                 message = json.loads(message)
-                self.data_logger.info("RECEBI:", message)
+                self.data_logger.info("RECEBI: %s", message)
                 await self.handle_message(websocket, message)
             except json.JSONDecodeError:
                 await websocket.send(json.dumps({"error": "JSON invalido."}))

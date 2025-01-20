@@ -28,11 +28,9 @@ class FramesWebsocketServer(WebSocket):
         Envia um frame para todas as conexões ativas.
         """
         if self.connections:
-            self.data_logger.info("Ha uma conexao ativa! Enviando frame")
             to_remove = []
             for websocket in self.connections:
                 try:
-                    self.data_logger.info("Enviando frame")
                     await self.send_data(websocket, {"frame": frame})
                 except Exception as e:
                     self.error_logger.error(f"Falha ao enviar frame: {e}")
