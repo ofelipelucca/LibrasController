@@ -8,7 +8,7 @@ class ConfigStateManager:
     Classe para gerenciar o estado de configurações relacionadas a gestos.
     Salva e recupera dados de um arquivo JSON.
     """
-    def __init__(self, file_path="src/main/src/data/configs/states/estado_atual.json") -> None:    
+    def __init__(self, file_path="src/main/src/data/configs/states/estado_atual.json"):    
         self.config_file = file_path
         self.state = {
             "nome_gesto_direita": "MAO",
@@ -19,7 +19,7 @@ class ConfigStateManager:
         self.config_logger = Logger.configure_json_data_logger()
         self.error_logger = Logger.configure_error_logger()
 
-    def _verify_database(self) -> None:
+    def __verify_database(self) -> None:
         """ 
         Verifica se o arquivo de configuração existe; se não, cria com as configurações padrão.
         """
@@ -37,7 +37,7 @@ class ConfigStateManager:
         Returns:
             list: Lista contendo as chaves dos atributos padrão.
         """
-        self._verify_database()
+        self.__verify_database()
         return list(self.state.keys())
     
     def read_atribute(self, atributo: str) -> str:
@@ -50,7 +50,7 @@ class ConfigStateManager:
         Returns:
             str: O valor do atributo, ou uma string vazia se não encontrado.
         """
-        self._verify_database()
+        self.__verify_database()
         try:
             with open(self.config_file, "r") as file:
                 config = json.load(file)
@@ -64,7 +64,7 @@ class ConfigStateManager:
             return ""
 
     def update_atribute(self, atributo: str, novo_valor: str) -> None:
-        self._verify_database()
+        self.__verify_database()
         try:
             with open(self.config_file, "r") as file:
                 config = json.load(file)
@@ -89,7 +89,7 @@ class ConfigStateManager:
             error_message = "Arquivo JSON corrompido. Restaurando para os valores padrão."
             self.error_logger.error(error_message)
             self.config_logger.error(error_message)
-            self._restaurar_configuracoes_padrao()
+            self.__restaurar_configuracoes_padrao()
 
         except FileNotFoundError as fnf_error:
             error_message = f"Não foi possível encontrar o arquivo JSON: {fnf_error}"
@@ -101,7 +101,7 @@ class ConfigStateManager:
             self.error_logger.error(error_message)
             self.config_logger.error(error_message)
 
-    def _restaurar_configuracoes_padrao(self):
+    def __restaurar_configuracoes_padrao(self):
         """
         Restaura o arquivo de configuração com os valores padrão.
         """

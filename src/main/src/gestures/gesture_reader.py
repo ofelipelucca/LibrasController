@@ -11,8 +11,7 @@ class GestureReader:
 
     A `GestureReader` usa MediaPipe para detectar e processar gestos das mãos em frames de vídeo. Interpreta os gestos detectados e atualiza as configurações conforme necessário.
     """
-
-    def __init__(self) -> None:
+    def __init__(self):
         self.interpretador = GestureInterpretador()
 
         self.ongoing_threads = []
@@ -64,8 +63,8 @@ class GestureReader:
         """
         try:
             if not self.stop_event.is_set():
-                mao_direita = self._filter_hand(results, "Right")
-                mao_esquerda = self._filter_hand(results, "Left")
+                mao_direita = self.__filter_hand(results, "Right")
+                mao_esquerda = self.__filter_hand(results, "Left")
                 if mao_direita:
                     self.interpretador.interpretar(mao_direita, "Right")
                     self.gestos_logger.info("Gesto da mao direita interpretado com sucesso.")
@@ -97,7 +96,7 @@ class GestureReader:
             return results.multi_hand_landmarks
         return []
 
-    def _filter_hand(self, results, mao_para_filtrar: str):
+    def __filter_hand(self, results, mao_para_filtrar: str):
         """
         Filtra as mãos desejadas dentro de `results` e remove aquelas que não correspondem ao filtro.
 

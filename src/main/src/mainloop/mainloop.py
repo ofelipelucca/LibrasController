@@ -4,7 +4,7 @@ from src.logger.logger import Logger
 import asyncio
 
 class MainLoop:
-    def __init__(self, data_port: int, frames_port: int) -> None:
+    def __init__(self, data_port: int, frames_port: int):
         """
         Inicializa o MainLoop com os servidores WebSocket de dados e frames.
 

@@ -1,9 +1,8 @@
-from src.logger.logger import Logger
 import json
 import os
 
 class DataLibrasGestures:
-    def __init__(self, data_filepath="src/main/src/data/gestures/libras_gestos.json") -> None:
+    def __init__(self, data_filepath="src/main/src/data/gestures/libras_gestos.json"):
         self.file_data_libras_gestures = data_filepath
 
         if not os.path.exists(self.file_data_libras_gestures):

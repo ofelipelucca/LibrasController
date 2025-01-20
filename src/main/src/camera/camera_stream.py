@@ -33,7 +33,7 @@ class CameraStream:
         self.camera_capture.stop()
         logger.info("Parando a captura de frames.")
 
-    async def __stream_frames(self):
+    async def __stream_frames(self) -> None:
         """Loop de captura e envio dos frames"""
         while not self.stop_flag.is_set():
             frame = self.get_frame()
@@ -59,7 +59,7 @@ class CameraStream:
             png_placeholder = self.__convert_cv2_mat_to_string(png_placeholder_frame)
         return png_placeholder
 
-    def __get_cv2_frame(self):
+    def __get_cv2_frame(self) -> cv2.Mat:
         """
         Obtém um frame capturado e o converte.
         Returns: o frame (cv2.Mat) capturado se estiver disponível, caso contrário, retorna None.

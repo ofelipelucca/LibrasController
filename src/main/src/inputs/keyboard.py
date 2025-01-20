@@ -19,7 +19,7 @@ class Keyboard(Device):
     """
     
     @staticmethod
-    def _send_input(input: INPUT) -> None:
+    def __send_input(input: INPUT) -> None:
         try:
             user32.SendInput(1, ctypes.byref(input), ctypes.sizeof(input))
         except Exception as e:
@@ -29,7 +29,7 @@ class Keyboard(Device):
             raise 
         
     @staticmethod
-    def _create_input(key: str, event_type: str) -> INPUT:
+    def __create_input(key: str, event_type: str) -> INPUT:
         if key not in KEYBOARD_KEYS:
             error_message = f"Input nao eh valido. key: {key}, event_type: {event_type}."
             Logger.configure_error_logger().error(error_message)
@@ -44,11 +44,11 @@ class Keyboard(Device):
     @staticmethod
     def up(key: str) -> None:
         Logger.configure_input_logger().info(f"Iniciando pressionamento da tecla '{key}'.")
-        input_event = Keyboard._create_input(key, KEYEVENTF_KEYDOWN)
-        Keyboard._send_input(input_event)
+        input_event = Keyboard.__create_input(key, KEYEVENTF_KEYDOWN)
+        Keyboard.__send_input(input_event)
         
     @staticmethod
     def down(key: str) -> None:
         Logger.configure_input_logger().info(f"Iniciando liberacao da tecla '{key}'.")
-        input_event = Keyboard._create_input(key, KEYEVENTF_KEYUP)
-        Keyboard._send_input(input_event)
+        input_event = Keyboard.__create_input(key, KEYEVENTF_KEYUP)
+        Keyboard.__send_input(input_event)

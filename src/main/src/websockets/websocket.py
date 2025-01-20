@@ -11,7 +11,7 @@ class WebSocket:
         self.port = port
         self.server = None  
 
-    async def start(self):
+    async def start(self) -> None:
         """
         Inicia o servidor WebSocket na porta especificada.
         """
@@ -22,7 +22,7 @@ class WebSocket:
         except Exception as e:
             self.error_logger.error(f"Erro ao abrir o servidor local na porta {self.port}: {e}")
 
-    async def stop(self):
+    async def stop(self) -> None:
         """
         Para o servidor WebSocket, fechando todas as conexões.
         """
@@ -31,7 +31,7 @@ class WebSocket:
             await self.server.wait_closed()  
             self.logger.info(f"Servidor WebSocket na porta {self.port} foi encerrado.")
 
-    def handle_message(self, websocket, message):
+    def handle_message(self, websocket, message) -> None:
         """
         Manipula mensagens recebidas pelo WebSocket. Deve ser implementado por subclasses.
 
@@ -41,7 +41,7 @@ class WebSocket:
         """
         pass
 
-    async def send_data(self, websocket, data):
+    async def send_data(self, websocket, data) -> None:
         """
         Envia dados em formato JSON para o cliente conectado.
 
@@ -52,7 +52,7 @@ class WebSocket:
         json_data = json.dumps(data)
         await websocket.send(json_data) 
 
-    async def handler(self, websocket, path):
+    async def handler(self, websocket, path) -> None:
         """
         Manipula conexões e mensagens recebidas no servidor WebSocket.
 

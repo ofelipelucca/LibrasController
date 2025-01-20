@@ -15,16 +15,16 @@ class DataWebsocketServer(WebSocket):
         self.config = ConfigRouter()
         self.camera_stream = CameraStream(frames_server) 
 
-    def load_data_gestos(self):
+    def load_data_gestos(self) -> dict:
         gestos_custom = DataCustomGestures().get_gestos()
         gestos_libras = DataLibrasGestures().get_gestos()
         return gestos_libras | gestos_custom
 
-    def load_data_binds(self):
+    def load_data_binds(self) -> dict:
         data_libras = DataBindsSalvas().get_all_binds()
         return data_libras
 
-    async def handle_message(self, websocket, message):
+    async def handle_message(self, websocket, message) -> None:
         try:
             if isinstance(message, dict):
                 if "ping" in message:

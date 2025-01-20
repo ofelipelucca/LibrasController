@@ -16,7 +16,7 @@ class Mouse(Device):
     """
 
     @staticmethod
-    def _get_screen_dimensions() -> tuple:
+    def __get_screen_dimensions() -> tuple:
         """
         Obtém as dimensões da tela do sistema.
 
@@ -28,7 +28,7 @@ class Mouse(Device):
         return screen_width, screen_height
 
     @staticmethod
-    def _get_cursor_pos() -> tuple:
+    def __get_cursor_pos() -> tuple:
         """
         Retorna a posição atual do cursor como uma tupla (x, y).
 
@@ -42,7 +42,7 @@ class Mouse(Device):
         return cursor_pos.x, cursor_pos.y
 
     @staticmethod
-    def _send_input(inputs) -> None:
+    def __send_input(inputs) -> None:
         """
         Envia os eventos de entrada para o sistema.
 
@@ -58,7 +58,7 @@ class Mouse(Device):
             raise ValueError(error_message)
 
     @staticmethod
-    def _create_input(button: str, event_type: str) -> None:
+    def __create_input(button: str, event_type: str) -> None:
         """
         Cria e configura o input para simular o clique do mouse.
 
@@ -81,11 +81,11 @@ class Mouse(Device):
 
         mi = MOUSEINPUT(0, 0, 0, flags, 0, 0)
         inputs = [INPUT(INPUT_MOUSE, mi)]
-        Mouse._send_input(inputs)
+        Mouse.__send_input(inputs)
         Logger.configure_input_logger().info(f"Simulacao de clique: '{button}' ({event_type}) realizado com sucesso.")
 
     @staticmethod
-    def _move_mouse_absolute(x: int, y: int, min_diff: int = 2) -> None:
+    def __move_mouse_absolute(x: int, y: int, min_diff: int = 2) -> None:
         """
         Move o cursor do mouse para as coordenadas absolutas especificadas.
 
@@ -93,11 +93,11 @@ class Mouse(Device):
             x (int): Coordenada x.
             y (int): Coordenada y.
         """
-        screen_width, screen_height = Mouse._get_screen_dimensions()
+        screen_width, screen_height = Mouse.__get_screen_dimensions()
         webcam_width = int(ConfigRouter().read_atribute("webcam_width"))
         webcam_height = int(ConfigRouter().read_atribute("webcam_height"))
 
-        x_atual, y_atual = Mouse._get_cursor_pos()
+        x_atual, y_atual = Mouse.__get_cursor_pos()
         x_proporcional = np.interp(webcam_width * x, (0, webcam_width), (0, screen_width))
         y_proporcional = np.interp(webcam_height * y, (0, webcam_height), (0, screen_height))
 
@@ -113,7 +113,7 @@ class Mouse(Device):
                 Logger.configure_input_logger().info(f"Cursor movido para ({x_novo}, {y_novo}) com sucesso.")
 
     @staticmethod
-    def _move_mouse_relative(x: int, y: int, cursor_speed: int = 10) -> None:
+    def __move_mouse_relative(x: int, y: int, cursor_speed: int = 10) -> None:
         """
         Cria o input que move o cursor do mouse considerando a posição atual do mouse.
 
@@ -121,11 +121,11 @@ class Mouse(Device):
             x (int): Coordenada adicionada à x.
             y (int): Coordenada adicionada à y.
         """        
-        screen_width, screen_height = Mouse._get_screen_dimensions()
+        screen_width, screen_height = Mouse.__get_screen_dimensions()
         webcam_width = int(ConfigRouter().read_atribute("webcam_width"))
         webcam_height = int(ConfigRouter().read_atribute("webcam_height"))
 
-        x_atual, y_atual = Mouse._get_cursor_pos()
+        x_atual, y_atual = Mouse.__get_cursor_pos()
         x_ultima_pos_proporcional =  ConfigRouter().read_atribute("x_ultima_pos_cursor") 
         y_ultima_pos_proporcional = ConfigRouter().read_atribute("y_ultima_pos_cursor") 
 
@@ -155,7 +155,7 @@ class Mouse(Device):
         
         input_structure = INPUT(type=INPUT_MOUSE, mi=mi)
         
-        Mouse._send_input([input_structure])
+        Mouse.__send_input([input_structure])
         Logger.configure_input_logger().info(f"Enviando input para mover o mouse para ({x_novo}, {y_novo}).")
 
     @staticmethod
@@ -167,7 +167,7 @@ class Mouse(Device):
             button (str): Botão do mouse (LEFT, MIDDLE, RIGHT).
         """
         Logger.configure_input_logger().info(f"Iniciando clique UP no botao {button}.")
-        Mouse._create_input(button, "UP")
+        Mouse.__create_input(button, "UP")
 
     @staticmethod
     def down(button: str) -> None:
@@ -178,8 +178,7 @@ class Mouse(Device):
             button (str): Botão do mouse (LEFT, MIDDLE, RIGHT).
         """
         Logger.configure_input_logger().info(f"Iniciando clique DOWN no botao {button}.")
-        Mouse._create_input(button, "DOWN")
-
+        Mouse.__create_input(button, "DOWN")
 
     @staticmethod
     def move(x: float, y: float, event_type: int) -> None:
@@ -192,7 +191,7 @@ class Mouse(Device):
             event_type (int): Tipo de input de movimento de mouse. (ABSOLUTE_MOVE: 0, RELATIVE_MOVE: 1)
         """
         if event_type == ABSOLUTE_MOVE:
-            Mouse._move_mouse_absolute(x, y)
+            Mouse.__move_mouse_absolute(x, y)
         if event_type == RELATIVE_MOVE:
-            Mouse._move_mouse_relative(x, y)
+            Mouse.__move_mouse_relative(x, y)
         Logger.configure_input_logger().info(f"Tentando mover o cursor para ({x}, {y}). | Tipo de input: {event_type}")

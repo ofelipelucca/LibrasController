@@ -1,7 +1,7 @@
 from src.inputs.c_structures.c_constants import KEYBOARD_KEYS, LEFT, MIDDLE, RIGHT
 
 class DataBindCodes:
-    def __init__(self) -> None:
+    def __init__(self):
         self.KEYBOARD_KEYS = set(KEYBOARD_KEYS.keys())
         self.MOUSE_KEYS = {LEFT, MIDDLE, RIGHT}
 

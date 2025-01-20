@@ -34,7 +34,7 @@ class GestureInterpretador:
     A classe `GestureInterpretador` usa landmarks de mãos para identificar gestos tanto de Libras quanto gestos personalizados configurados pelo usuário. Ela verifica a presença e a interação de dedos para determinar o gesto executado e executa ações associadas a esse gesto.
     """
 
-    def __init__(self) -> None:
+    def __init__(self):
         self.execute_input = ExecuteInput()
 
         # Configuração dos loggers
@@ -90,21 +90,21 @@ class GestureInterpretador:
             return
 
         gesto_atual = {
-            "pointing_down": self.is_pointing_down(hand_landmarks, self.finger_landmarks['index'], self.finger_landmarks['middle'], self.finger_landmarks['ring'], self.finger_landmarks['pinky']),
-            "fingers_overlap": self.are_fingers_overlapping(hand_landmarks, self.finger_pairs),
-            "thumb_finger_inside_hand": not self.is_finger_up(hand_landmarks, self.finger_landmarks['thumb'][2:]),
-            "index_finger_up": self.is_finger_up(hand_landmarks, self.finger_landmarks['index'][1:]),
-            "middle_finger_up": self.is_finger_up(hand_landmarks, self.finger_landmarks['middle'][1:]),
-            "ring_finger_up": self.is_finger_up(hand_landmarks, self.finger_landmarks['ring'][1:]),
-            "pinky_finger_up": self.is_finger_up(hand_landmarks, self.finger_landmarks['pinky'][1:]),
-            "thumb_middle_touch": self.are_finger_tips_touching(hand_landmarks, self.finger_landmarks['thumb'][3:], self.finger_landmarks['middle'][3:]),
-            "thumb_cross_index": self.are_fingers_overlapping(hand_landmarks, [('thumb', 'index')]),
-            "index_and_middle_together": self.are_fingers_together(hand_landmarks, self.finger_landmarks['index'], self.finger_landmarks['middle']),
-            "bent_index": self.is_index_bent(),
+            "pointing_down": self.__is_pointing_down(hand_landmarks, self.finger_landmarks['index'], self.finger_landmarks['middle'], self.finger_landmarks['ring'], self.finger_landmarks['pinky']),
+            "fingers_overlap": self.__are_fingers_overlapping(hand_landmarks, self.finger_pairs),
+            "thumb_finger_inside_hand": not self.__is_finger_up(hand_landmarks, self.finger_landmarks['thumb'][2:]),
+            "index_finger_up": self.__is_finger_up(hand_landmarks, self.finger_landmarks['index'][1:]),
+            "middle_finger_up": self.__is_finger_up(hand_landmarks, self.finger_landmarks['middle'][1:]),
+            "ring_finger_up": self.__is_finger_up(hand_landmarks, self.finger_landmarks['ring'][1:]),
+            "pinky_finger_up": self.__is_finger_up(hand_landmarks, self.finger_landmarks['pinky'][1:]),
+            "thumb_middle_touch": self.__are_finger_tips_touching(hand_landmarks, self.finger_landmarks['thumb'][3:], self.finger_landmarks['middle'][3:]),
+            "thumb_cross_index": self.__are_fingers_overlapping(hand_landmarks, [('thumb', 'index')]),
+            "index_and_middle_together": self.__are_fingers_together(hand_landmarks, self.finger_landmarks['index'], self.finger_landmarks['middle']),
+            "bent_index": self.__is_index_bent(),
             "has_movement": False,
             "type_of_movement": ""
         }
-        #print(hand_landmarks.landmark[12].x)
+
         if mao_a_interpretar == self.libras_hand:
             thread_mao_direita = threading.Thread(target=self._interpretar_libras, args=(hand_landmarks, gesto_atual))
             thread_mao_direita.start()
@@ -113,7 +113,7 @@ class GestureInterpretador:
             self._interpretar_gesto_custom(hand_landmarks, gesto_atual)
             self.gestos_logger.info(f"Gesto custom interpretado: {gesto_atual}")
 
-    def _interpretar_libras(self, hand_landmarks, gesto_atual: list):
+    def _interpretar_libras(self, hand_landmarks, gesto_atual: list) -> None:
         candidatos = list(self.gestos_libras.keys())
 
         for key in gesto_atual:
@@ -123,20 +123,20 @@ class GestureInterpretador:
                 
         for candidato in candidatos:
             if self.gestos_libras[candidato]["has_movement"]:
-                tipo_de_movimento, tem_movimento = self._categorizar_movimento(hand_landmarks, self.gestos_libras[candidato]["type_of_movement"])
+                tipo_de_movimento, tem_movimento = self.__categorizar_movimento(hand_landmarks, self.gestos_libras[candidato]["type_of_movement"])
                 gesto_atual["type_of_movement"] = tipo_de_movimento
                 gesto_atual["has_movement"] = tem_movimento
 
         if len(candidatos) == 1:
             gesto_identificado = candidatos[0]
-            if self._verify_gesto(gesto_atual, gesto_identificado):
+            if self.__verify_gesto(gesto_atual, gesto_identificado):
                ConfigRouter().update_atribute("nome_gesto_direita", gesto_identificado)
-               self._execute_acao_gesto(hand_landmarks, gesto_identificado)
+               self.__execute_acao_gesto(hand_landmarks, gesto_identificado)
                return
 
         ConfigRouter().update_atribute("nome_gesto_direita", "MAO")
         
-    def _interpretar_gesto_custom(self, hand_landmarks, gesto_atual: list):
+    def _interpretar_gesto_custom(self, hand_landmarks, gesto_atual: list) -> None:
         candidatos = list(self.gestos_custom.keys())
 
         for key in gesto_atual:
@@ -146,14 +146,14 @@ class GestureInterpretador:
 
         if len(candidatos) == 1:
             gesto_identificado = candidatos[0]
-            if self._verify_gesto(gesto_atual, gesto_identificado):
-               self._execute_acao_gesto(hand_landmarks, gesto_identificado)
+            if self.__verify_gesto(gesto_atual, gesto_identificado):
+               self.__execute_acao_gesto(hand_landmarks, gesto_identificado)
                ConfigRouter().update_atribute("nome_gesto_esquerda", gesto_identificado)
                return
         
         ConfigRouter().update_atribute("nome_gesto_esquerda", "MAO")
 
-    def _verify_gesto(self, gesto: list, gesto_candidato: str) -> bool:
+    def __verify_gesto(self, gesto: list, gesto_candidato: str) -> bool:
         """
         Verifica, atributo por atributo (dentre os atributos relevantes para o gesto), se o gesto detectado é igual ao gesto candidato do banco de dados.
 
@@ -165,14 +165,14 @@ class GestureInterpretador:
             bool: True se os atributos relevantes do gesto detectado são iguais aos do gesto candidato.
             bool: False caso contrário.
         """
-        def _concatenar_dicts(*dict_args):
+        def concatenar_dicts(*dict_args):
             result = {}
             for dict in dict_args:
                 result.update(dict)
             return result
 
-        dict_atributos_relevantes = _concatenar_dicts(self.libras_atributos_relevantes, self.custom_atributos_relevantes)
-        dict_gestos = _concatenar_dicts(self.gestos_libras, self.gestos_custom)
+        dict_atributos_relevantes = concatenar_dicts(self.libras_atributos_relevantes, self.custom_atributos_relevantes)
+        dict_gestos = concatenar_dicts(self.gestos_libras, self.gestos_custom)
 
         atributos_relevantes = dict_atributos_relevantes[gesto_candidato]
         gesto_candidato = dict_gestos[gesto_candidato]
@@ -182,7 +182,7 @@ class GestureInterpretador:
                 return False
         return True
 
-    def _execute_acao_gesto(self, hand_landmarks, gesto: str) -> None:
+    def __execute_acao_gesto(self, hand_landmarks, gesto: str) -> None:
         """
         Executa o input do gesto identificado.
 
@@ -201,7 +201,7 @@ class GestureInterpretador:
             y_coords = hand_landmarks.landmark[8].y
             self.execute_input.executar_mouse_tracking(x_coords, y_coords)
 
-    def is_finger_up(self, hand_landmarks, finger_indices: list) -> bool:
+    def __is_finger_up(self, hand_landmarks, finger_indices: list) -> bool:
         """
         Verifica se o dedo está levantado.
 
@@ -241,7 +241,7 @@ class GestureInterpretador:
                 return False
         return True
 
-    def are_fingers_overlapping(self, hand_landmarks, finger_pairs: list) -> bool:
+    def __are_fingers_overlapping(self, hand_landmarks, finger_pairs: list) -> bool:
         """
         Verifica se os dedos estão sobrepostos.
 
@@ -255,7 +255,7 @@ class GestureInterpretador:
         """
 
         for pair in finger_pairs:
-            if self._retas_se_intersectam(
+            if self.__retas_se_intersectam(
                 hand_landmarks, 
                 self.finger_landmarks[pair[0]], 
                 self.finger_landmarks[pair[1]]
@@ -264,7 +264,7 @@ class GestureInterpretador:
 
         return False
 
-    def _retas_se_intersectam(self, hand_landmarks, finger1: list, finger2: list) -> bool:
+    def __retas_se_intersectam(self, hand_landmarks, finger1: list, finger2: list) -> bool:
         """
         Verifica se há interseção entre as linhas dos dedos fornecidos.
 
@@ -282,9 +282,9 @@ class GestureInterpretador:
         q1 = np.array([hand_landmarks.landmark[finger2[0]].x, hand_landmarks.landmark[finger2[0]].y])
         q2 = np.array([hand_landmarks.landmark[finger2[-1]].x, hand_landmarks.landmark[finger2[-1]].y])
 
-        return self._do_intersect(p1, p2, q1, q2)
+        return self.__do_intersect(p1, p2, q1, q2)
 
-    def _do_intersect(self, p1, p2, q1, q2) -> bool:
+    def __do_intersect(self, p1, p2, q1, q2) -> bool:
         """
         Verifica se duas linhas definidas por quatro pontos se intersectam.
 
@@ -296,41 +296,41 @@ class GestureInterpretador:
             bool: True se as linhas se intersectam.
             bool: False caso contrário.
         """
-        def __orientation(p, q, r):
+        def orientation(p, q, r):
             val = (q[1] - p[1]) * (r[0] - q[0]) - (q[0] - p[0]) * (r[1] - q[1])
             if val == 0:
                 return 0  # Colinear
             return 1 if val > 0 else 2  # Horário ou anti-horário
 
-        def __is_on_the_segment(p, q, r):
+        def is_on_the_segment(p, q, r):
             if (min(p[0], r[0]) <= q[0] <= max(p[0], r[0]) and
                     min(p[1], r[1]) <= q[1] <= max(p[1], r[1])):
                 return True
             return False
 
         # Obter as orientações para diferentes combinações de pontos
-        o1 = __orientation(p1, p2, q1)
-        o2 = __orientation(p1, p2, q2)
-        o3 = __orientation(q1, q2, p1)
-        o4 = __orientation(q1, q2, p2)
+        o1 = orientation(p1, p2, q1)
+        o2 = orientation(p1, p2, q2)
+        o3 = orientation(q1, q2, p1)
+        o4 = orientation(q1, q2, p2)
 
         # Caso geral
         if o1 != o2 and o3 != o4:
             return True
 
         # Casos especiais de colinearidade
-        if o1 == 0 and __is_on_the_segment(p1, q1, p2):
+        if o1 == 0 and is_on_the_segment(p1, q1, p2):
             return True
-        if o2 == 0 and __is_on_the_segment(p1, q2, p2):
+        if o2 == 0 and is_on_the_segment(p1, q2, p2):
             return True
-        if o3 == 0 and __is_on_the_segment(q1, p1, q2):
+        if o3 == 0 and is_on_the_segment(q1, p1, q2):
             return True
-        if o4 == 0 and __is_on_the_segment(q1, p2, q2):
+        if o4 == 0 and is_on_the_segment(q1, p2, q2):
             return True
 
         return False
     
-    def are_finger_tips_touching(self, hand_landmarks, finger1: list, finger2: list, min_distance=0.05) -> bool:
+    def __are_finger_tips_touching(self, hand_landmarks, finger1: list, finger2: list, min_distance=0.05) -> bool:
         """
         Verifica se o a ponta dos dedos estão se tocando.
 
@@ -352,7 +352,7 @@ class GestureInterpretador:
 
         return distance <= min_distance
 
-    def _categorizar_movimento(self, hand_landmarks, type_of_movement: str) -> tuple:
+    def __categorizar_movimento(self, hand_landmarks, type_of_movement: str) -> tuple:
         """
         Verifica se há movimento no gesto e retorna o nome do atributo verdadeiro.
 
@@ -366,7 +366,7 @@ class GestureInterpretador:
                 - bool: True se qualquer tipo de movimento for detectado, False caso contrário.
         """
 
-        def _wrist_rotate(hand_landmarks) -> bool:
+        def wrist_rotate(hand_landmarks) -> bool:
             """
             Verifica se o pulso rotaciona.
 
@@ -399,7 +399,7 @@ class GestureInterpretador:
 
             return not 0.9 < diff < 1.2
 
-        def _finger_tip_moves(hand_landmarks, finger: str, min_diff: float, max_diff: float) -> tuple:
+        def finger_tip_moves(hand_landmarks, finger: str, min_diff: float, max_diff: float) -> tuple:
             """
             Verifica se a posição do dedo muda.
 
@@ -434,10 +434,10 @@ class GestureInterpretador:
         self.capturing_movement = True
 
         movement_methods = {
-            "wrist_rotate": lambda hand_landmarks: _wrist_rotate(hand_landmarks),
-            "y_index_tip_changes": lambda hand_landmarks: _finger_tip_moves(hand_landmarks, 'index', 0.9, 1.2)[0],
-            "x_index_tip_changes": lambda hand_landmarks: _finger_tip_moves(hand_landmarks, 'index', 0.9, 1.2)[1],
-            "pinky_pos_changes": lambda hand_landmarks: _finger_tip_moves(hand_landmarks, 'pinky', 0.9, 1.5)[1],
+            "wrist_rotate": lambda hand_landmarks: wrist_rotate(hand_landmarks),
+            "y_index_tip_changes": lambda hand_landmarks: finger_tip_moves(hand_landmarks, 'index', 0.9, 1.2)[0],
+            "x_index_tip_changes": lambda hand_landmarks: finger_tip_moves(hand_landmarks, 'index', 0.9, 1.2)[1],
+            "pinky_pos_changes": lambda hand_landmarks: finger_tip_moves(hand_landmarks, 'pinky', 0.9, 1.5)[1],
         }
 
         if type_of_movement in movement_methods:
@@ -446,7 +446,7 @@ class GestureInterpretador:
         self.capturing_movement = False
         return "", False
 
-    def is_pointing_down(self, hand_landmarks, finger1: list, finger2: list, finger3: list, finger4: list) -> bool:
+    def __is_pointing_down(self, hand_landmarks, finger1: list, finger2: list, finger3: list, finger4: list) -> bool:
         """
         Verifica se qualquer um dos dedos especificados está apontando para baixo.
 
@@ -476,7 +476,7 @@ class GestureInterpretador:
                 (finger3_tip_y > finger3_pip_y and finger3_tip_y > wrist_y) or      #       landmark da base do dedo e do landmark do pulso,
                 (finger4_tip_y > finger4_pip_y and finger4_tip_y > wrist_y))        #       a mão será considerada como apontada para baixo
     
-    def are_fingers_together(self, hand_landmarks, finger1: list, finger2: list, min_percentage_difference=12.0) -> bool:
+    def __are_fingers_together(self, hand_landmarks, finger1: list, finger2: list, min_percentage_difference=12.0) -> bool:
         """
         Verifica se os dedos estão juntos com base na porcentagem de diferença de distância entre PIPs e TIPs.
 
@@ -507,7 +507,7 @@ class GestureInterpretador:
 
         return percentage_difference <= min_percentage_difference
 
-    def is_index_bent(self) -> bool:
+    def __is_index_bent(self) -> bool:
         """
         Verifica se o dedo indicador está dobrado.
 

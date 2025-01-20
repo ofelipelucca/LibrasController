@@ -19,7 +19,7 @@ class BasicConfigManager:
     error_logger = Logger.configure_error_logger()
     
     @staticmethod
-    def _verify_database() -> None:
+    def __verify_database() -> None:
         """ 
         Verifica se o arquivo de configuração existe; se não, cria com as configurações padrão.
         """
@@ -49,7 +49,7 @@ class BasicConfigManager:
         Returns:
             str: O valor do atributo, ou uma string vazia se não encontrado.
         """
-        BasicConfigManager._verify_database()
+        BasicConfigManager.__verify_database()
         try:
             with open(BasicConfigManager.config_file, "r") as file:
                 config = json.load(file)
@@ -63,7 +63,7 @@ class BasicConfigManager:
             return ""
 
     @staticmethod
-    def update_atributo(atributo: str, novo_valor: str) -> None:
+    def update_atribute(atributo: str, novo_valor: str) -> None:
         """
         Atualiza o valor de um atributo no arquivo de configuração.
         
@@ -71,7 +71,7 @@ class BasicConfigManager:
             atributo (str): O nome do atributo a ser atualizado.
             novo_valor (str): O novo valor para o atributo.
         """
-        BasicConfigManager._verify_database()
+        BasicConfigManager.__verify_database()
         try:
             with open(BasicConfigManager.config_file, "r") as file:
                 config = json.load(file)

@@ -59,7 +59,7 @@ class ConfigRouter:
         """
         try:
             if atributo in BasicConfigManager.get_atributes():
-                BasicConfigManager.update_atributo(atributo, novo_valor)
+                BasicConfigManager.update_atribute(atributo, novo_valor)
             elif atributo in ConfigRouter.state_manager.get_atributes():
                 ConfigRouter.state_manager.update_atribute(atributo, novo_valor)
             else:

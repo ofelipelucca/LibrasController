@@ -14,8 +14,7 @@ class ExecuteInput:
     
     Ela lida com a simulação de inputs de teclado e mouse, liberando inputs anteriores e controlando a execução contínua de inputs.
     """
-    
-    def __init__(self) -> None:
+    def __init__(self):
         self.ultimo_gesto: str = None
         self.ultimo_input_code: str = None
         self.input_em_andamento: bool = False
@@ -80,9 +79,9 @@ class ExecuteInput:
         """
         self.travar_novos_inputs = True
         
-        modo_toggle_ativado = input.obter_modo_toggle()
-        tempo_pressionado = input.obter_tempo()
-        bind = input.obter_tecla()
+        modo_toggle_ativado = input.get_modo_toggle()
+        tempo_pressionado = input.get_tempo()
+        bind = input.get_tecla()
 
         if not self.input_em_andamento:
             thread = threading.Thread(target=self._simular_input, args=(bind, tempo_pressionado, modo_toggle_ativado))

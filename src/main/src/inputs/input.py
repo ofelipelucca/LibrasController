@@ -8,7 +8,7 @@ class Input:
     A classe gerencia a tecla, o tempo pressionado e o modo contínuo de um input.
     """
 
-    def __init__(self, tecla: str, tempo_pressionado: int, modo_toggle: bool = False) -> None:
+    def __init__(self, tecla: str, tempo_pressionado: int, modo_toggle: bool = False):
         """
         Inicializa uma instância da classe Input.
 
@@ -17,7 +17,6 @@ class Input:
             tempo_pressionado (int): O tempo em segundos que a tecla deve permanecer pressionada.
             modo_toggle (bool): Indica se o modo contínuo está ativado.
         """
-        # Configuração do logger
         self.logger = Logger.configure_input_logger()
         self.error_logger = Logger.configure_error_logger()
 
@@ -31,7 +30,7 @@ class Input:
             self.logger.error(f"Erro ao criar Input: {e}")
             self.error_logger.error(f"Erro ao criar Input: {e}")
 
-    def obter_tecla(self) -> str:
+    def get_tecla(self) -> str:
         """
         Obtém a tecla associada ao input.
 
@@ -40,7 +39,7 @@ class Input:
         """
         return self.tecla
     
-    def obter_tempo(self) -> int:
+    def get_tempo(self) -> int:
         """
         Obtém o tempo pressionado associado ao input.
 
@@ -49,7 +48,7 @@ class Input:
         """
         return self.tempo_pressionado
 
-    def obter_modo_toggle(self) -> bool:
+    def get_modo_toggle(self) -> bool:
         """
         Obtém o modo toggle associado ao input.
 

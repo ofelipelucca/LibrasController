@@ -1,10 +1,9 @@
 from src.data.binds.data_binds_salvas import DataBindsSalvas
-from src.logger.logger import Logger
 import json
 import os
 
 class DataCustomGestures:
-    def __init__(self, data_filepath="src/main/src/data/gestures/custom_gestos.json") -> None:
+    def __init__(self, data_filepath="src/main/src/data/gestures/custom_gestos.json"):
         self.file_data_custom_gestures = data_filepath
 
         if not os.path.exists(self.file_data_custom_gestures):

@@ -8,7 +8,7 @@ class Device(ABC):
         ULONG_PTR = ctypes.c_uint32
 
     @abstractmethod
-    def _send_input(self, inputs):
+    def __send_input(self, inputs) -> None:
         """
         Envia os eventos de entrada para o sistema. Deve ser implementado nas subclasses.
 
@@ -18,7 +18,7 @@ class Device(ABC):
         pass
     
     @abstractmethod
-    def _create_input(key: str, event_type: str):
+    def __create_input(key: str, event_type: str) -> None:
         """
         Cria e configura o input para enviar corretamente para o sistema por meio da Windows API.
         
@@ -29,7 +29,7 @@ class Device(ABC):
         pass
 
     @abstractmethod
-    def up(key: str):
+    def up(key: str) -> None:
         """
         Envia o evento de pressionar a tecla.
 
@@ -39,7 +39,7 @@ class Device(ABC):
         pass
 
     @abstractmethod
-    def down(key: str):
+    def down(key: str) -> None:
         """
         Envia o evento de liberar a tecla.
         

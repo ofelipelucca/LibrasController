@@ -17,8 +17,7 @@ class Camera:
     """
     Classe responsável por capturar vídeo da câmera, detectar gestos e exibir os frames processados.
     """
-
-    def __init__(self) -> None:
+    def __init__(self):
         """
         Inicializa o CameraReader com os componentes de captura de vídeo, leitor de gestos e configuração.
         """

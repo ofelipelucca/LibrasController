@@ -5,7 +5,7 @@ class FramesWebsocketServer(WebSocket):
         super().__init__(port)
         self.connections = set()
 
-    async def handler(self, websocket, path):
+    async def handler(self, websocket, path) -> None:
         """
         Este método é executado quando uma nova conexão é estabelecida.
         Ele gerencia as conexões e garante que o envio contínuo de frames 
@@ -23,7 +23,7 @@ class FramesWebsocketServer(WebSocket):
             self.connections.remove(websocket)
             self.logger.info("Conexao WebSocket encerrada.")
 
-    async def send_frame(self, frame: str):
+    async def send_frame(self, frame: str) -> None:
         """
         Envia um frame para todas as conexões ativas.
         """
