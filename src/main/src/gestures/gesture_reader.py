@@ -33,7 +33,7 @@ class GestureReader:
         self.gestos_logger = Logger.configure_gestures_logger()
         self.error_logger = Logger.configure_error_logger()
 
-    def _detect_hand(self, frame: cv2.Mat):
+    def detect_hand(self, frame: cv2.Mat):
         """
         Detecta a mão dentro do frame.
 

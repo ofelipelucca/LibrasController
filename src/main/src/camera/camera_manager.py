@@ -51,24 +51,23 @@ class Camera:
                             time.sleep(0.01) 
                             continue
 
-                        results = self.gesture_reader._detect_hand(unready_frame)
-                        unready_frame = self.draw_hand(unready_frame, results)
+                        results = self.gesture_reader.detect_hand(unready_frame)
+                        unready_frame = self.__draw_hand(unready_frame, results)
 
-                        if self.crop_hand_mode:
-                            unready_frame = self.crop_hand(results)
-                            continue
-
+                        if self.crop_hand_mode and self.frame is not None:
+                            unready_frame = self.__crop_hand(unready_frame, results)
+                            
                         self.frame = unready_frame
 
                         if results.multi_hand_landmarks:
                             self.gesture_reader.read_gesture(results)
                     self.logger.info("Saindo do loop de deteccao.")
                 except Exception as e:
-                    self.logger.error(f"Erro no loop de deteccao: {traceback.format_exc()}")
+                    self.logger.error(f"Erro no loop de deteccao: {traceback.format_exc()} || {e}")
 
-            detection_thread = threading.Thread(target=detection_loop)
-            detection_thread.daemon = True  
-            detection_thread.start()
+            self.detection_thread = threading.Thread(target=detection_loop)
+            self.detection_thread.daemon = True  
+            self.detection_thread.start()
 
         except Exception as e:
             error_message = f"Erro durante a captura de video: {traceback.format_exc()}"
@@ -80,30 +79,79 @@ class Camera:
         Para a captura de vídeo e libera a câmera.
         """
         self.stop_flag.set()
+        self.detection_thread.join()
         if self.cap:
             self.cap.release()
             self.cap = None
         self.logger.info("Camera liberada.")
         self.logger.info("Objetos e recursos limpos.")
 
-    def crop_hand(self, results) -> cv2.Mat:
+    def __crop_hand(self, frame: cv2.Mat, results, aspect_ratio: float = 2 / 3) -> cv2.Mat:
         """
-        Corta o frame nos limites da mão detectada.
+        Corta o frame nos limites da mão detectada, mantendo a proporção 3:2.
 
         Args:
+            frame (cv2.Mat): O frame que será cortado.
             results: Os resultados da detecção de mão.
-        
+            aspect_ratio (float): Proporção desejada (largura / altura).
+
         Returns:
-            cv2.Mat: O frame com a mão cropada ou um frame vazio se não há nenhuma lista.
+            cv2.Mat: O frame com a mão cropada ou o frame original se não houver mão detectada.
         """
+        if frame is None:
+            return frame
+
         hand_landmarks_list = self.gesture_reader.get_hand_landmarks(results)
-        if hand_landmarks_list:
-            for hand_landmarks, handedness in zip(hand_landmarks_list, results.multi_handedness):
-                mao_detectada = self.gesture_reader.classify_hand(handedness)
-                if mao_detectada == RIGHT:
-                    x_left, y_left, x_right, y_right = self.calculate_hand_rectangle(self.frame, hand_landmarks)
-                    return self.frame[y_left:y_right, x_left:x_right]
-        return self.frame
+        if not hand_landmarks_list:
+            return frame
+
+        for hand_landmarks, handedness in zip(hand_landmarks_list, results.multi_handedness):
+            mao_detectada = self.gesture_reader.classify_hand(handedness)
+            if mao_detectada == RIGHT:  # Apenas para a mão direita (ou ajuste para ambas as mãos)
+                # Obtém as coordenadas da mão
+                x_left, y_top, x_right, y_bottom = self.__calculate_hand_rectangle(frame, hand_landmarks)
+
+                # Calcula a largura e altura da ROI
+                hand_width = x_right - x_left
+                hand_height = y_bottom - y_top
+
+                # Define a altura do ROI como a altura original do frame
+                target_height = frame.shape[0]
+                target_width = int(target_height * aspect_ratio)
+
+                # Calcula as coordenadas para centralizar a mão no ROI
+                hand_center_x = (x_left + x_right) // 2
+                hand_center_y = (y_top + y_bottom) // 2
+
+                # Define os limites do ROI
+                crop_x_left = max(0, hand_center_x - target_width // 2)
+                crop_x_right = min(frame.shape[1], hand_center_x + target_width // 2)
+                crop_y_top = max(0, hand_center_y - target_height // 2)
+                crop_y_bottom = min(frame.shape[0], hand_center_y + target_height // 2)
+
+                # Ajusta as coordenadas se o ROI ultrapassar os limites do frame
+                if crop_x_right - crop_x_left < target_width:
+                    if crop_x_left == 0:
+                        crop_x_right = min(frame.shape[1], crop_x_left + target_width)
+                    else:
+                        crop_x_left = max(0, crop_x_right - target_width)
+
+                if crop_y_bottom - crop_y_top < target_height:
+                    if crop_y_top == 0:
+                        crop_y_bottom = min(frame.shape[0], crop_y_top + target_height)
+                    else:
+                        crop_y_top = max(0, crop_y_bottom - target_height)
+
+                # Corta o frame
+                cropped_frame = frame[crop_y_top:crop_y_bottom, crop_x_left:crop_x_right]
+
+                # Redimensiona o frame cortado para garantir a proporção 3:2
+                if cropped_frame.shape[1] != target_width or cropped_frame.shape[0] != target_height:
+                    cropped_frame = cv2.resize(cropped_frame, (target_width, target_height))
+
+                return cropped_frame
+
+        return frame
 
     def list_cameras(self) -> list[str]:
         """
@@ -158,7 +206,7 @@ class Camera:
             raise SystemError(error_message)
         return cv2.flip(frame, 1)
 
-    def draw_hand(self, frame: cv2.Mat, results) -> cv2.Mat:
+    def __draw_hand(self, frame: cv2.Mat, results) -> cv2.Mat:
         """
         Desenha a mão detectada no frame.
 
@@ -181,7 +229,7 @@ class Camera:
                     self.gesture_reader.mp_hands.HAND_CONNECTIONS
                 )
 
-                x_left, y_top, x_right, y_bottom = self.calculate_hand_rectangle(frame, hand_landmarks)
+                x_left, y_top, x_right, y_bottom = self.__calculate_hand_rectangle(frame, hand_landmarks)
 
                 # Quadrado em volta da mão
                 cv2.rectangle(frame, (x_left, y_top), (x_right, y_bottom), (0, 0, 0), 1)  
@@ -216,7 +264,7 @@ class Camera:
 
         return frame
         
-    def calculate_hand_rectangle(self, frame: cv2.Mat, hand_landmarks) -> tuple:
+    def __calculate_hand_rectangle(self, frame: cv2.Mat, hand_landmarks) -> tuple:
         """
         Calcula os limites do retângulo ao redor da mão detectada.
 

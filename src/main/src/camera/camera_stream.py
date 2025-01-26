@@ -66,7 +66,7 @@ class CameraStream:
         """
         return self.camera_capture.frame if self.camera_capture.frame is not None else None
 
-    def __convert_cv2_mat_to_string(self, frame) -> str:
+    def __convert_cv2_mat_to_string(self, frame: cv2.Mat) -> str:
         """
         Converte um frame (cv2.Mat) para string (base64).
         """
@@ -77,5 +77,5 @@ class CameraStream:
             frame_base64 = base64.b64encode(buffer).decode('utf-8')
             return frame_base64
         except Exception as e:
-            error_logger.error(f"Falha na conversão de frame para JPEG: {e}")
+            error_logger.error(f"Falha na conversao de frame para JPEG: {e}")
             return ""
