@@ -174,14 +174,6 @@ export default class WebSocketClient {
         this.send({ STOP_DETECTION: true });
     }
 
-    public sendStartFrameStream() {
-        this.send({ START_FRAMES_STREAM: true });
-    }
-
-    public sendStopFramesStream() {
-        this.send({ STOP_FRAMES_STREAM: true });
-    }
-
     public sendStartCropHandMode() {
         this.send({ START_CROP_HAND_MODE: true });
     }

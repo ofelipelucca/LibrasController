@@ -78,7 +78,6 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
 
     const closeClients = async () => {
         console.log("Fechando client de data.");
-        wsDataClient?.sendStopFramesStream();
         wsDataClient?.sendStopDetection();
         wsDataClient?.close();
     };
@@ -99,7 +98,6 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
             { delay: 150, method: () => dataClient.sendGetCamera() },
             { delay: 250, method: () => dataClient.sendGetCamerasDisponiveis() },
             { delay: 350, method: () => dataClient.sendStartDetection() },
-            { delay: 450, method: () => dataClient.sendStartFrameStream() },
         ];
 
         await doRequests(requests);

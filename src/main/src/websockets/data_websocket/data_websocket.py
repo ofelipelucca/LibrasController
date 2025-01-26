@@ -50,26 +50,6 @@ class DataWebsocketServer(WebSocket):
                     self.logger.info(msg)
                     await self.send_data(websocket, {"status": "success", "message": msg})
                     return
-                
-                if "START_FRAMES_STREAM" in message:
-                    msg = "Iniciando a stream de frames."
-                    if self.camera_stream is None:
-                        self.error_logger.error("O socket de stream nao esta aberto no momento.")
-                        return
-                    await self.camera_stream.__stream_frames()
-                    self.logger.info(msg)
-                    await self.send_data(websocket, {"status": "success", "message": msg})
-                    return
-                
-                if "STOP_FRAMES_STREAM" in message:
-                    msg = "Encerrando a stream de frames."
-                    if self.camera_stream is None:
-                        self.error_logger.error("O socket de stream nao esta aberto no momento.")
-                        return
-                    await self.camera_stream.stop_stream()
-                    self.logger.info(msg)
-                    await self.send_data(websocket, {"status": "success", "message": msg})
-                    return
 
                 if "START_CROP_HAND_MODE" in message:
                     msg = "Iniciando o modo de crop_hand."
