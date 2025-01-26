@@ -26,7 +26,7 @@ Certifique-se de que você possui:
 - Gerenciador de pacotes `pip` e `npm`.
 
 ### 2️⃣ **Instalação**
-Clone o repositório:
+Clone o repositório (ou faça o download manualmente do repositório):
 ```bash
 git clone https://github.com/ofelipelucca/librascontroller.git
 
