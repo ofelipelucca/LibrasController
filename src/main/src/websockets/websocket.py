@@ -52,7 +52,7 @@ class WebSocket:
         json_data = json.dumps(data)
         await websocket.send(json_data) 
 
-    async def handler(self, websocket, path) -> None:
+    async def handler(self, websocket) -> None:
         """
         Manipula conexões e mensagens recebidas no servidor WebSocket.
 

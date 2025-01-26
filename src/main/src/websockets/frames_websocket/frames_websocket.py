@@ -5,7 +5,7 @@ class FramesWebsocketServer(WebSocket):
         super().__init__(port)
         self.connections = set()
 
-    async def handler(self, websocket, path) -> None:
+    async def handler(self, websocket) -> None:
         """
         Este método é executado quando uma nova conexão é estabelecida.
         Ele gerencia as conexões e garante que o envio contínuo de frames 
