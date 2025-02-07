@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import SelectCamera from './pages/selectcamera/selectcamera';
 import Home from "./pages/home/home";
 import GestoDetalhes from "./pages/gestodetalhes/gestodetalhes";
+import AdicionarGesto from "./pages/adicionargesto/adicionargesto";
 
-type Page = 'selectcamera' | 'home' | 'gestocustom' | 'gestodetalhes';
+type Page = 'selectcamera' | 'home' | 'adicionargesto' | 'gestodetalhes';
 
 const App: React.FC = () => {
     const [currentPage, setCurrentPage] = useState<Page>('selectcamera');
@@ -26,6 +27,7 @@ const App: React.FC = () => {
         <div>
             {currentPage === 'selectcamera' && <SelectCamera onNavigate={navigate} />}
             {currentPage === 'home' && <Home onNavigate={navigate} />}
+            {currentPage === 'adicionargesto' && <AdicionarGesto onNavigate={navigate}/>}
             {currentPage === 'gestodetalhes' && (
                 <GestoDetalhes
                     onNavigate={navigate}
