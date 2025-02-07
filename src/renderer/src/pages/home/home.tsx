@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './home.css';
-import WebSocketClient from 'renderer/src/network/websocket/websocket_client';
-import WebSocketFrames from 'renderer/src/network/websocket/websocket_frames';
+import WebSocketClient from 'renderer/src/network/websockets/websocket_client';
+import WebSocketFrames from 'renderer/src/network/websockets/websocket_frames';
 import GestosContainer from './components/gestoscontainer';
 import VideoContainer from './components/videocontainer';
 import ErrorContainer from './components/errorcontainer';

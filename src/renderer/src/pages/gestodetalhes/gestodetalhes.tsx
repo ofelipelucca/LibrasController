@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import WebSocketClient from "renderer/src/network/websocket/websocket_client";
+import WebSocketClient from "renderer/src/network/websockets/websocket_client";
 import './gestodetalhes.css';
 import BindOptions from "./components/bindoptions";
 import ToggleOptions from "./components/toggleoptions";

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import WebSocketClient from '../../network/websocket/websocket_client';
+import WebSocketClient from '../../network/websockets/websocket_client';
 import './selectcamera.css';
 
 interface Ports {
