@@ -39,6 +39,7 @@ class Camera:
     async def start(self) -> None:
         camera_nome = ConfigRouter.read_atribute("camera_selecionada")
         self.logger.info("Processo de deteccao iniciado.")
+        self.stop_flag.clear()
         try:
             self.select_camera_by_name(camera_nome)
 

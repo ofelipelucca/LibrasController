@@ -2,6 +2,7 @@ import os
 import cv2
 import time
 import base64
+import asyncio
 import threading
 from src.logger.logger import Logger
 from src.camera.camera_manager import Camera
@@ -20,12 +21,13 @@ class CameraStream:
     async def start_stream(self) -> None:
         """Inicia a captura de frames da câmera."""
         logger.info("Tentando iniciar o stream da camera.")
+        self.stop_flag.clear()
         if self.camera_capture:
             await self.camera_capture.start()
             while self.__get_cv2_frame() is None:
                 time.sleep(0.25)
             data_logger.info("Primeiro frame encontrado.")
-            await self.__stream_frames()
+            asyncio.create_task(self.__stream_frames())
 
     async def stop_stream(self) -> None:
         """Encerra a captura da câmera."""
@@ -35,11 +37,12 @@ class CameraStream:
 
     async def __stream_frames(self) -> None:
         """Loop de captura e envio dos frames"""
+        loop = asyncio.get_event_loop()
         while not self.stop_flag.is_set():
-            frame = self.get_frame()
+            frame = await loop.run_in_executor(None, self.get_frame)
             if frame == "": continue
             await self.frames_sender.send_frame(frame)
-            time.sleep(0.001)
+            time.sleep(0.0001)
 
     def get_frame(self) -> str:
         """Retorna o frame atual convertido para jpeg"""
