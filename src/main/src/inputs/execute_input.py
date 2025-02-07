@@ -64,7 +64,7 @@ class ExecuteInput:
         if modo_toggle_ativado:
             time.sleep(tempo_pressionado)
         
-        time.sleep(0.1)
+        time.sleep(0.01)
         self._liberar_input_atual()
         self.input_em_andamento = False
         self.travar_novos_inputs = False
