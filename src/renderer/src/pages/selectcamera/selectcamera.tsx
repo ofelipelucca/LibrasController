@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import WebSocketClient from '../../network/websockets/websocket_client';
 import './selectcamera.css';
-
-interface Ports {
-    data_port: number;
-}
+import WebSocketClient from '../../network/websockets/websocket_client';
 
 interface SelectCameraProps {
     onNavigate: (page: 'home') => void;
@@ -24,7 +20,7 @@ const SelectCamera: React.FC<SelectCameraProps> = ({ onNavigate }) => {
         const fetchPorts = async () => {
             try {
                 const port = await window.electron.getDataPort();
-                setPorts({ data_port: port });
+                setPorts({ data_port: port, frames_port: 0 });
             } catch (error) {
                 console.error("Erro ao buscar a porta:", error);
                 setError(true);
