@@ -1,11 +1,12 @@
 .video-container {
-    width: 50%;
+    width: 33%;
 }
 
 #add-gesto-container {
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 2vh;
 }
 
 .buttons {
@@ -14,4 +15,8 @@
     width: 50%;
     justify-content: center;
     gap: 2vh;
+}
+
+.buttons button {
+    padding: 2vh 4vh;
 }

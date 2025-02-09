@@ -163,7 +163,7 @@ const AdicionarGesto: React.FC<AdicionarGestoProps> = ({ onNavigate }) => {
             </div>
             <div className="buttons">
                 <button onClick={() => onNavigate("home")} id="voltar-button">VOLTAR</button>
-                <button onClick={handleTirarFoto}>TIRAR FOTO</button>
+                <button onClick={handleTirarFoto} id="foto-button">TIRAR FOTO</button>
             </div>
         </div>
     );
