@@ -90,7 +90,7 @@ class Camera:
 
     def __crop_hand(self, frame: cv2.Mat, results, aspect_ratio: float = 2 / 3) -> cv2.Mat:
         """
-        Corta o frame nos limites da mão detectada, mantendo a proporção 3:2.
+        Corta o frame nos limites da mão detectada, mantendo a proporção 3:2. (Caso a mão alvo não seja detectada, o frame será cortado centralizado)
 
         Args:
             frame (cv2.Mat): O frame que será cortado.
@@ -103,22 +103,21 @@ class Camera:
         if frame is None:
             return frame
 
-        hand_landmarks_list = self.gesture_reader.get_hand_landmarks(results)
-        if not hand_landmarks_list:
-            return frame
-        
         h, w, _ = frame.shape
         target_width = int(h * aspect_ratio)
 
         hand_center_x = w // 2
         hand_center_y = h // 2
 
-        for hand_landmarks, handedness in zip(hand_landmarks_list, results.multi_handedness):
-            mao_detectada = self.gesture_reader.classify_hand(handedness)
-            if mao_detectada == RIGHT:  # Apenas para a mão direita 
-                x_left, y_top, x_right, y_bottom = self.__calculate_hand_rectangle(frame, hand_landmarks)
-                hand_center_x = (x_left + x_right) // 2
-                hand_center_y = (y_top + y_bottom) // 2
+        hand_landmarks_list = self.gesture_reader.get_hand_landmarks(results)
+
+        if hand_landmarks_list:
+            for hand_landmarks, handedness in zip(hand_landmarks_list, results.multi_handedness):
+                mao_detectada = self.gesture_reader.classify_hand(handedness)
+                if mao_detectada == RIGHT:  # Apenas para a mão direita 
+                    x_left, y_top, x_right, y_bottom = self.__calculate_hand_rectangle(frame, hand_landmarks)
+                    hand_center_x = (x_left + x_right) // 2
+                    hand_center_y = (y_top + y_bottom) // 2
 
         crop_x_left = max(0, hand_center_x - target_width // 2)
         crop_x_right = min(w, hand_center_x + target_width // 2)
