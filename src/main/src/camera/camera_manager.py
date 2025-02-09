@@ -35,6 +35,7 @@ class Camera:
         ConfigRouter().update_atribute("nome_gesto_direita", self.nome_gesto_direita)
 
         self.logger = Logger.configure_application_logger()
+        self.error_logger = Logger.configure_error_logger()
 
     async def start(self) -> None:
         camera_nome = ConfigRouter.read_atribute("camera_selecionada")
@@ -64,7 +65,7 @@ class Camera:
                             self.gesture_reader.read_gesture(results)
                     self.logger.info("Saindo do loop de deteccao.")
                 except Exception as e:
-                    self.logger.error(f"Erro no loop de deteccao: {traceback.format_exc()} || {e}")
+                    self.error_logger.error(f"Erro no loop de deteccao: {traceback.format_exc()} || {e}")
 
             self.detection_thread = threading.Thread(target=detection_loop)
             self.detection_thread.daemon = True  
@@ -72,7 +73,7 @@ class Camera:
 
         except Exception as e:
             error_message = f"Erro durante a captura de video: {traceback.format_exc()}"
-            self.logger.error(error_message)
+            self.error_logger.error(error_message)
             raise RuntimeError(error_message)
 
     def stop(self) -> None:
@@ -105,54 +106,43 @@ class Camera:
         hand_landmarks_list = self.gesture_reader.get_hand_landmarks(results)
         if not hand_landmarks_list:
             return frame
+        
+        h, w, _ = frame.shape
+        target_width = int(h * aspect_ratio)
+
+        hand_center_x = w // 2
+        hand_center_y = h // 2
 
         for hand_landmarks, handedness in zip(hand_landmarks_list, results.multi_handedness):
             mao_detectada = self.gesture_reader.classify_hand(handedness)
-            if mao_detectada == RIGHT:  # Apenas para a mão direita (ou ajuste para ambas as mãos)
-                # Obtém as coordenadas da mão
+            if mao_detectada == RIGHT:  # Apenas para a mão direita 
                 x_left, y_top, x_right, y_bottom = self.__calculate_hand_rectangle(frame, hand_landmarks)
-
-                # Calcula a largura e altura da ROI
-                hand_width = x_right - x_left
-                hand_height = y_bottom - y_top
-
-                # Define a altura do ROI como a altura original do frame
-                target_height = frame.shape[0]
-                target_width = int(target_height * aspect_ratio)
-
-                # Calcula as coordenadas para centralizar a mão no ROI
                 hand_center_x = (x_left + x_right) // 2
                 hand_center_y = (y_top + y_bottom) // 2
 
-                # Define os limites do ROI
-                crop_x_left = max(0, hand_center_x - target_width // 2)
-                crop_x_right = min(frame.shape[1], hand_center_x + target_width // 2)
-                crop_y_top = max(0, hand_center_y - target_height // 2)
-                crop_y_bottom = min(frame.shape[0], hand_center_y + target_height // 2)
+        crop_x_left = max(0, hand_center_x - target_width // 2)
+        crop_x_right = min(w, hand_center_x + target_width // 2)
+        crop_y_top = max(0, hand_center_y - h // 2)
+        crop_y_bottom = min(h, hand_center_y + h // 2)
 
-                # Ajusta as coordenadas se o ROI ultrapassar os limites do frame
-                if crop_x_right - crop_x_left < target_width:
-                    if crop_x_left == 0:
-                        crop_x_right = min(frame.shape[1], crop_x_left + target_width)
-                    else:
-                        crop_x_left = max(0, crop_x_right - target_width)
+        if crop_x_right - crop_x_left < target_width:
+            if crop_x_left == 0:
+                crop_x_right = min(w, crop_x_left + target_width)
+            else:
+                crop_x_left = max(0, crop_x_right - target_width)
 
-                if crop_y_bottom - crop_y_top < target_height:
-                    if crop_y_top == 0:
-                        crop_y_bottom = min(frame.shape[0], crop_y_top + target_height)
-                    else:
-                        crop_y_top = max(0, crop_y_bottom - target_height)
+        if crop_y_bottom - crop_y_top < h:
+            if crop_y_top == 0:
+                crop_y_bottom = min(w, crop_y_top + h)
+            else:
+                crop_y_top = max(0, crop_y_bottom - h)
 
-                # Corta o frame
-                cropped_frame = frame[crop_y_top:crop_y_bottom, crop_x_left:crop_x_right]
+        cropped_frame = frame[crop_y_top:crop_y_bottom, crop_x_left:crop_x_right]
 
-                # Redimensiona o frame cortado para garantir a proporção 3:2
-                if cropped_frame.shape[1] != target_width or cropped_frame.shape[0] != target_height:
-                    cropped_frame = cv2.resize(cropped_frame, (target_width, target_height))
+        if cropped_frame.shape[1] != target_width or cropped_frame.shape[0] != h:
+            cropped_frame = cv2.resize(cropped_frame, (target_width, h))
 
-                return cropped_frame
-
-        return frame
+        return cropped_frame
 
     def list_cameras(self) -> list[str]:
         """
@@ -183,11 +173,13 @@ class Camera:
             index = dispositivos_video.index(camera_nome)
             self.cap = cv2.VideoCapture(index)
             if not self.cap.isOpened():
-                raise ValueError(f"Não foi possível abrir a câmera: {camera_nome}")
+                error_message = f"Não foi possível abrir a câmera: {camera_nome}"
+                self.error_logger.error(error_message)
+                raise ValueError(error_message)
             self.logger.info(f"Camera selecionada e aberta: {camera_nome}")
         else:
             error_message = f"Camera '{camera_nome}' nao encontrada."
-            self.logger.error(error_message)
+            self.error_logger.error(error_message)
             raise ValueError(error_message)
 
     def read_frame(self) -> cv2.Mat:
@@ -204,6 +196,7 @@ class Camera:
             ret, frame = self.cap.read()
         if not ret:
             error_message = "Erro ao capturar a imagem da camera."
+            self.error_logger.error(error_message)
             raise SystemError(error_message)
         return cv2.flip(frame, 1)
 
@@ -276,8 +269,10 @@ class Camera:
         Returns:
             tuple: Coordenadas (x_left, y_top, x_right, y_bottom) do retângulo.
         """
+        if frame is None and hand_landmarks is None:
+            return 0, 0, 0, 0
+
         h, w, _ = frame.shape
-        crop_padding = 0.15
 
         x_left = int(min([lm.x for lm in hand_landmarks.landmark]) * w)
         x_right = int(max([lm.x for lm in hand_landmarks.landmark]) * w)

@@ -1,0 +1,17 @@
+.video-container {
+    width: 50%;
+}
+
+#add-gesto-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.buttons {
+    display: flex;
+    flex-direction: row;
+    width: 50%;
+    justify-content: center;
+    gap: 2vh;
+}

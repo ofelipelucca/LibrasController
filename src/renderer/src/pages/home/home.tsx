@@ -83,6 +83,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
         if (wsDataClientRef.current) { 
             console.log("Fechando client de data.");
             wsDataClientRef.current.sendStopDetection();
+            wsDataClientRef.current.sendStopCropHandMode();
             wsDataClientRef.current.close();
             wsDataClientRef.current = null; 
         }
@@ -168,7 +169,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
 
     return (
         <div className="container">
-            <div className="mainContent">
+            <div className="main-content">
                 <GestosContainer
                     gestos={gestos}
                     adicionarGesto={() => handleNavigate('adicionargesto')}
