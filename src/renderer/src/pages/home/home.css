@@ -5,14 +5,14 @@
     flex-direction: column;
 }
 
-.mainContent {
+.main-content {
     display: flex;
     flex: 1;
     margin-top: 3vh;
     gap: 2vw;
 }
 
-.gestosContainer {
+.gestos-container {
     flex: 1; 
     max-height: 79vh;
     padding-top: 15px;
@@ -25,21 +25,21 @@
     overflow-x: hidden;
 }
 
-.gestosContainer::-webkit-scrollbar {
+.gestos-container::-webkit-scrollbar {
     width: 8px;
 }
-.gestosContainer::-webkit-scrollbar-track {
+.gestos-container::-webkit-scrollbar-track {
     background: #333;
 }
-.gestosContainer::-webkit-scrollbar-thumb {
+.gestos-container::-webkit-scrollbar-thumb {
     background: #555;
     border-radius: 10px;
 }
-.gestosContainer::-webkit-scrollbar-thumb:hover {
+.gestos-container::-webkit-scrollbar-thumb:hover {
     background: #888;
 }
 
-.addButton {
+.add-button {
     background-color: #1f1f1f;
     color: white;
     font-size: 14px;
@@ -61,7 +61,7 @@
     margin-left: 10px;
 }
 
-.gestoItem {
+.gesto-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -72,7 +72,7 @@
     width: 80%;
 }
 
-.gestoText {
+.gesto-text {
     font-size: 14px;
     font-weight: bold;
     user-select: none;
@@ -83,13 +83,13 @@
     gap: 10px;
 }
 
-.iconButton {
+.icon-button {
     background-color: transparent;
     border: none;
     cursor: pointer;
 }
 
-.videoContainer {
+.video-container {
     flex: 2; 
     overflow: hidden;
     display: flex;
@@ -109,7 +109,7 @@
     user-select: none;
 }
 
-.selectCamera {
+.select-camera {
     height: 5vh;
     width: 70%;
     font-size: 10px;

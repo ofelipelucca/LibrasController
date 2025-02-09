@@ -17,14 +17,14 @@ export default function VideoContainer({
 }: VideoContainerProps) {
     if (isLoading && !frame) {
         return (
-            <div className="videoContainer">
-                <p id="loadingText">{loadingText}</p>
+            <div className="video-container">
+                <p id="loading-text">{loadingText}</p>
             </div>
         );
     }
 
     return (
-        <div className="videoContainer">
+        <div className="video-container">
             {frame && (
                 <img
                     src={`data:image/jpeg;base64,${frame}`}
@@ -35,7 +35,7 @@ export default function VideoContainer({
             <select
                 value={selectedCamera}
                 onChange={handleCameraChange}
-                className="selectCamera"
+                className="select-Camera"
             >
                 {camerasDisponiveis.map((camera, index) => (
                     <option key={index} value={camera}>
