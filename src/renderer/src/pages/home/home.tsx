@@ -83,7 +83,6 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
         if (wsDataClientRef.current) { 
             console.log("Fechando client de data.");
             wsDataClientRef.current.sendStopDetection();
-            wsDataClientRef.current.sendStopCropHandMode();
             wsDataClientRef.current.close();
             wsDataClientRef.current = null; 
         }
@@ -102,7 +101,6 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
     const fetchInitialData = async (dataClient: WebSocketClient) => {
         console.log("Enviando requests iniciais...");
         const requests: TimedRequest[] = [
-            { delay: 10, method: () => dataClient.sendStopCropHandMode() },
             { delay: 50, method: () => dataClient.sendGetAllGestos() },
             { delay: 150, method: () => dataClient.sendGetCamera() },
             { delay: 250, method: () => dataClient.sendGetCamerasDisponiveis() },

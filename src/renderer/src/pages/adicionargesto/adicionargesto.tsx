@@ -73,8 +73,9 @@ const AdicionarGesto: React.FC<AdicionarGestoProps> = ({ onNavigate }) => {
     }, [wsDataClient, wsFramesClient]);
 
     const closeClients = async () => {
+        console.log("Fechando client de data.");
         if (wsDataClientRef.current) {
-            console.log("Fechando client de data.");
+            wsDataClientRef.current.sendStopCropHandMode();
             wsDataClientRef.current.sendStopDetection();
             wsDataClientRef.current.close();
             wsDataClientRef.current = null;
@@ -89,8 +90,8 @@ const AdicionarGesto: React.FC<AdicionarGestoProps> = ({ onNavigate }) => {
     const fetchInitialData = async (dataClient: WebSocketClient) => {
         console.log("Enviando requests iniciais...");
         const requests: TimedRequest[] = [
-            { delay: 0, method: () => dataClient.sendStartDetection() },
             { delay: 50, method: () => dataClient.sendStartCropHandMode() },
+            { delay: 100, method: () => dataClient.sendStartDetection() },
         ];
 
         await doRequests(requests);
