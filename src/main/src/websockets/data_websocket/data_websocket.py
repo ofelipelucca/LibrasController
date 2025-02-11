@@ -77,22 +77,22 @@ class DataWebsocketServer(WebSocket):
                     return
 
                 if "GET_GESTO_BY_NAME" in message:
-                    nome_gesto = message["getGestoByName"]
+                    nome_gesto = message["GET_GESTO_BY_NAME"]
                     self.data_logger.info(f"Retornando o gesto: {nome_gesto}")
                     gesto = self.data_gestos.get(nome_gesto, None)
                     await self.send_data(websocket, {"gesto": gesto})
                     return
                 
                 if "GET_CUSTOMIZABLE_STATE" in message:
-                    nome_gesto = message["getCustomizableState"]
+                    nome_gesto = message["GET_CUSTOMIZABLE_STATE"]
                     self.data_logger.info(f"Retornando o estado 'customizable' do gesto: {nome_gesto}")
                     is_custom = DataBindsSalvas().get_customizable(nome_gesto)
                     await self.send_data(websocket, {"customizableState": is_custom})
                     return
 
                 if "SAVE_GESTO" in message:
-                    novo_gesto = message["saveGesto"]
-                    sobreescrever = message.get("sobreescrever", True)
+                    novo_gesto = message["SAVE_GESTO"]
+                    sobreescrever = message.get("sobreescrever", False)
                     
                     nome = novo_gesto["nome"]
                     bind = novo_gesto["bind"]
