@@ -61,7 +61,7 @@ class Camera:
                             
                         self.frame = unready_frame
 
-                        if results.multi_hand_landmarks:
+                        if results.multi_hand_landmarks and not self.crop_hand_mode:
                             self.gesture_reader.read_gesture(results)
                     self.logger.info("Saindo do loop de deteccao.")
                 except Exception as e:
@@ -296,3 +296,17 @@ class Camera:
             bool: True se a câmera estiver aberta, False caso contrário.
         """
         return self.cap is not None and self.cap.isOpened()
+
+    def start_crop_hand_mode(self) -> None:
+        """
+        Inicia o CROP_HAND_MODE.
+        """
+        ConfigRouter().update_atribute("nome_gesto_esquerda", "MAO")
+        ConfigRouter().update_atribute("nome_gesto_direita", "MAO")
+        self.crop_hand_mode = True
+
+    def stop_crop_hand_mode(self) -> None:
+        """
+        Para o CROP_HAND_MODE.
+        """
+        self.crop_hand_mode = False

@@ -57,7 +57,7 @@ class DataWebsocketServer(WebSocket):
                     if not self.camera_stream.camera_capture:
                         await self.send_data(websocket, {"error": "Nao existe um processo de deteccao ativo no momento, envie 'START_DETECTION' antes de fazer esta requisição."})    
                         return
-                    self.camera_stream.camera_capture.crop_hand_mode = True
+                    self.camera_stream.camera_capture.start_crop_hand_mode()
                     await self.send_data(websocket, {"status": "success", "message": msg})
                     return
                 
@@ -67,7 +67,7 @@ class DataWebsocketServer(WebSocket):
                     if not self.camera_stream.camera_capture:
                         await self.send_data(websocket, {"error": "Nao existe um processo de deteccao ativo no momento."})    
                         return
-                    self.camera_stream.camera_capture.crop_hand_mode = False
+                    self.camera_stream.camera_capture.stop_crop_hand_mode()
                     await self.send_data(websocket, {"status": "success", "message": msg})  
                     return
 
