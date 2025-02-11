@@ -48,7 +48,7 @@ class Camera:
                 try:
                     self.logger.info("Iniciando loop de deteccao.")
                     while not self.stop_flag.is_set():
-                        unready_frame = self.read_frame()
+                        unready_frame: cv2.Mat = self.read_frame()
                         if unready_frame is None:
                             time.sleep(0.01) 
                             continue
@@ -56,7 +56,7 @@ class Camera:
                         results = self.gesture_reader.detect_hand(unready_frame)
                         unready_frame = self.__draw_hand(unready_frame, results)
 
-                        if self.crop_hand_mode and self.frame is not None:
+                        if self.crop_hand_mode:
                             unready_frame = self.__crop_hand(unready_frame, results)
                             
                         self.frame = unready_frame
@@ -301,7 +301,7 @@ class Camera:
         """
         Inicia o CROP_HAND_MODE.
         """
-        ConfigRouter().update_atribute("nome_gesto_esquerda", "MAO")
+        ConfigRouter().update_atribute("nome_gesto_esquerda", "GESTOS CUSTOMIZADOS APENAS NA MAO DIREITA!")
         ConfigRouter().update_atribute("nome_gesto_direita", "MAO")
         self.crop_hand_mode = True
 
