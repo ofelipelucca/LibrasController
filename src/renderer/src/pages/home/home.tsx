@@ -5,6 +5,7 @@ import WebSocketFrames from 'renderer/src/network/websockets/websocket_frames';
 import GestosContainer from './components/gestoscontainer';
 import VideoContainer from './components/videocontainer';
 import ErrorContainer from './components/errorcontainer';
+import { useLoadingText } from 'renderer/src/hooks/useLoadingText';
 
 interface HomeProps {
     onNavigate: (page: 'adicionargesto' | 'gestodetalhes', nome_do_gesto?: string, gesto?: Gesto) => void;
@@ -17,7 +18,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
     const [frame, setFrame] = useState<string | null>(null);
     const [ports, setPorts] = useState<Ports | null>(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [loadingText, setLoadingText] = useState('Carregando...');
+    const loadingText = useLoadingText("Iniciando a câmera", isLoading);
     const [error, setError] = useState(false);
     const [gestos, setGestos] = useState<{ [nome_do_gesto: string]: Gesto }>({});
     const [camerasDisponiveis, setCamerasDisponiveis] = useState<string[]>([]);
@@ -27,7 +28,6 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
     useEffect(() => {
         const fetchPorts = async () => {
             try {
-                setLoadingText('Carregando as portas.');
                 const data_port = await window.electron.getDataPort();
                 const frames_port = await window.electron.getFramesPort();
                 setPorts({ data_port, frames_port });
@@ -51,7 +51,6 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
     }, [ports]);
 
     const connectWebSockets = async (ports: Ports) => {
-        setLoadingText('Abrindo a câmera.');
         setIsLoading(true);
 
         try {
@@ -64,7 +63,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
             if (!framesConnection || !dataConnection) throw new Error('Falha na conexão');
 
             setWsDataClient(client_data);
-            wsDataClientRef.current = client_data; 
+            wsDataClientRef.current = client_data;
             setWsFramesClient(client_frames);
         } catch (err) {
             console.error('Erro ao conectar:', err);
@@ -80,11 +79,11 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
     }, [wsDataClient, wsFramesClient]);
 
     const closeClients = async () => {
-        if (wsDataClientRef.current) { 
+        if (wsDataClientRef.current) {
             console.log("Fechando client de data.");
             wsDataClientRef.current.sendStopDetection();
             wsDataClientRef.current.close();
-            wsDataClientRef.current = null; 
+            wsDataClientRef.current = null;
         }
         setWsDataClient(null);
     };
@@ -118,30 +117,6 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
     };
 
     useEffect(() => {
-        let intervalId: NodeJS.Timeout;
-
-        const animateLoadingText = (baseText: string) => {
-            setLoadingText((prev) => {
-                const dots = prev.replace(baseText, '').length;
-                return dots >= 3 ? baseText : `${prev}.`;
-            });
-        };
-
-        if (isLoading) {
-            intervalId = setInterval(() => {
-                if (loadingText.startsWith("Carregando")) {
-                    animateLoadingText("Carregando");
-                }
-                if (loadingText.startsWith("Abrindo a câmera")) {
-                    animateLoadingText("Abrindo a câmera");
-                }
-            }, 500);
-        }
-
-        return () => clearInterval(intervalId);
-    }, [isLoading, loadingText]);
-
-    useEffect(() => {
         if (frame && isLoading) setIsLoading(false);
     }, [frame]);
 
@@ -161,7 +136,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
         const new_camera = event.target.value;
         console.log("new camera: ", new_camera);
         setSelectedCamera(new_camera);
-        wsDataClientRef.current?.sendStopDetection(); 
+        wsDataClientRef.current?.sendStopDetection();
         wsDataClientRef.current?.sendSetCamera(new_camera);
         wsDataClientRef.current?.sendStartDetection();
     };

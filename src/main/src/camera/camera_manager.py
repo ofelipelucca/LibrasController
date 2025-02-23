@@ -301,7 +301,7 @@ class Camera:
         """
         Inicia o CROP_HAND_MODE.
         """
-        ConfigRouter().update_atribute("nome_gesto_esquerda", "GESTOS CUSTOMIZADOS APENAS NA MAO DIREITA!")
+        ConfigRouter().update_atribute("nome_gesto_esquerda", "MAO")
         ConfigRouter().update_atribute("nome_gesto_direita", "MAO")
         self.crop_hand_mode = True
 

@@ -35,7 +35,7 @@ export default function VideoContainer({
             <select
                 value={selectedCamera}
                 onChange={handleCameraChange}
-                className="select-Camera"
+                className="select-camera"
             >
                 {camerasDisponiveis.map((camera, index) => (
                     <option key={index} value={camera}>

@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import './adicionargesto.css';
 import WebSocketClient from "renderer/src/network/websockets/websocket_client";
 import WebSocketFrames from "renderer/src/network/websockets/websocket_frames";
+import { useLoadingText } from "renderer/src/hooks/useLoadingText";
 
 interface AdicionarGestoProps {
     onNavigate: (page: 'home') => void;
@@ -14,13 +15,12 @@ const AdicionarGesto: React.FC<AdicionarGestoProps> = ({ onNavigate }) => {
     const [frame, setFrame] = useState<string | null>(null);
     const [ports, setPorts] = useState<Ports | null>(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [loadingText, setLoadingText] = useState('Carregando...');
+    const loadingText = useLoadingText("Preparando tudo", isLoading);
     const [error, setError] = useState(false);
 
     useEffect(() => {
         const fetchPorts = async () => {
             try {
-                setLoadingText('Carregando as portas.');
                 const data_port = await window.electron.getDataPort();
                 const frames_port = await window.electron.getFramesPort();
                 setPorts({ data_port, frames_port });
@@ -44,7 +44,6 @@ const AdicionarGesto: React.FC<AdicionarGestoProps> = ({ onNavigate }) => {
     }, [ports]);
 
     const connectWebSockets = async (ports: Ports) => {
-        setLoadingText('Abrindo a câmera.');
         setIsLoading(true);
 
         try {
@@ -105,30 +104,6 @@ const AdicionarGesto: React.FC<AdicionarGestoProps> = ({ onNavigate }) => {
     };
 
     useEffect(() => {
-        let intervalId: NodeJS.Timeout;
-
-        const animateLoadingText = (baseText: string) => {
-            setLoadingText((prev) => {
-                const dots = prev.replace(baseText, '').length;
-                return dots >= 3 ? baseText : `${prev}.`;
-            });
-        };
-
-        if (isLoading) {
-            intervalId = setInterval(() => {
-                if (loadingText.startsWith("Carregando")) {
-                    animateLoadingText("Carregando");
-                }
-                if (loadingText.startsWith("Abrindo a câmera")) {
-                    animateLoadingText("Abrindo a câmera");
-                }
-            }, 500);
-        }
-
-        return () => clearInterval(intervalId);
-    }, [isLoading, loadingText]);
-
-    useEffect(() => {
         if (frame && isLoading) setIsLoading(false);
     }, [frame]);
 
@@ -143,16 +118,16 @@ const AdicionarGesto: React.FC<AdicionarGestoProps> = ({ onNavigate }) => {
         console.log('Tirou foto!!!!! (:');
     }
 
-    if (isLoading && !frame) {
+    if (isLoading) {
         return (
-            <div className="videoContainer">
+            <div className="loading-container">
                 <p id="loadingText">{loadingText}</p>
             </div>
         );
     }
 
     return (
-        <div className="container" id="add-gesto-container">
+        <div className="content-container">
             <div className="video-container">
                 {frame && (
                     <img
@@ -161,10 +136,10 @@ const AdicionarGesto: React.FC<AdicionarGestoProps> = ({ onNavigate }) => {
                         className="video"
                     />
                 )}
-            </div>
-            <div className="buttons">
-                <button onClick={() => onNavigate("home")} id="voltar-button">VOLTAR</button>
-                <button onClick={handleTirarFoto} id="foto-button">TIRAR FOTO</button>
+                <div className="buttons">
+                    <button onClick={() => onNavigate("home")} id="voltar-button">VOLTAR</button>
+                    <button onClick={handleTirarFoto} id="foto-button">TIRAR FOTO</button>
+                </div>
             </div>
         </div>
     );

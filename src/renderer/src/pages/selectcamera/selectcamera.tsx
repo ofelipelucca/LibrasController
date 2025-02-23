@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import './selectcamera.css';
 import WebSocketClient from '../../network/websockets/websocket_client';
+import { useLoadingText } from 'renderer/src/hooks/useLoadingText';
+import SelectContainer from './components/selectcontainer';
+import ErrorContainer from './components/errorcontainer';
 
 interface SelectCameraProps {
     onNavigate: (page: 'home') => void;
@@ -10,7 +13,7 @@ const SelectCamera: React.FC<SelectCameraProps> = ({ onNavigate }) => {
     const [wsClient, setWsClient] = useState<WebSocketClient | null>(null);
     const [ports, setPorts] = useState<Ports | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [loadingText, setLoadingText] = useState<string>("Carregando.");
+    const loadingText = useLoadingText("Carregando", isLoading);
     const [error, setError] = useState<boolean>(false);
     const [errorCount, setErrorCount] = useState<number>(0);
     const [camerasDisponiveis, setCamerasDisponiveis] = useState<string[]>([]);
@@ -41,22 +44,6 @@ const SelectCamera: React.FC<SelectCameraProps> = ({ onNavigate }) => {
             connectWebSocket();
         }
     }, [ports]);
-
-    useEffect(() => {
-        let intervalId: NodeJS.Timeout;
-
-        if (isLoading) {
-            intervalId = setInterval(() => {
-                setLoadingText((prev) => {
-                    return prev.endsWith("...") ? "Carregando." : prev + ".";
-                });
-            }, 500);
-        } else {
-            setLoadingText("Carregando.");
-        }
-
-        return () => clearInterval(intervalId);
-    }, [isLoading]);
 
     const connectWebSocket = async () => {
         if (!ports) {
@@ -135,37 +122,15 @@ const SelectCamera: React.FC<SelectCameraProps> = ({ onNavigate }) => {
             <div id="select-container">
                 {isLoading ? (
                     <p>{loadingText}</p>
+                ) : error ? (
+                    <ErrorContainer tentarNovamente={tentarNovamente} />
                 ) : (
-                    <>
-                        {error ? (
-                            <>
-                                <select id="select-camera" value="" disabled>
-                                    <option value="" disabled hidden>
-                                        Não foi possível encontrar câmeras disponíveis
-                                    </option>
-                                </select>
-                                <button onClick={tentarNovamente} id="confirm-button">
-                                    TENTAR NOVAMENTE
-                                </button>
-                            </>
-                        ) : (
-                            <>
-                                <select id="select-camera" value={selectedCamera} onChange={handleChange}>
-                                    <option value="" disabled hidden>
-                                        Selecione uma câmera...
-                                    </option>
-                                    {camerasDisponiveis.map((camera, index) => (
-                                        <option key={index} value={camera}>
-                                            {camera}
-                                        </option>
-                                    ))}
-                                </select>
-                                <button onClick={confirmarCamera} id="confirm-button">
-                                    CONFIRMAR
-                                </button>
-                            </>
-                        )}
-                    </>
+                    <SelectContainer
+                        selectedCamera={selectedCamera}
+                        handleChange={handleChange}
+                        camerasDisponiveis={camerasDisponiveis}
+                        confirmarCamera={confirmarCamera}
+                    />
                 )}
             </div>
         </div>

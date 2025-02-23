@@ -26,8 +26,10 @@ async function initializeApp() {
 function createMainWindow() {
   window = new BrowserWindow({
     title: 'LibrasController',
-    minWidth: 1280,
-    minHeight: 720,
+    width: 1280,
+    height: 720,
+    maximizable: false,
+    resizable: false,
     backgroundColor: "#141414",
     titleBarStyle: 'default',
     autoHideMenuBar: true,
