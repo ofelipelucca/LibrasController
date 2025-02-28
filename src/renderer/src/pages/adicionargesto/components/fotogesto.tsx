@@ -20,7 +20,7 @@ export default function FotoGesto({frame, handleTirarFoto}: FotoGestoProps) {
                 </div>
             </div>
             <div className="tutorial-container">
-                <h1>COMO ADICIONAR UM GESTO:</h1>
+                <h1>INSTRUÇÕES:</h1>
                 <div className="li-container">
                     <li>Reproduza o gesto desejado com a mão direita.</li>
                     <li>Clique em "TIRAR FOTO".</li>
