@@ -3,6 +3,8 @@ import './adicionargesto.css';
 import WebSocketClient from "renderer/src/network/websockets/websocket_client";
 import WebSocketFrames from "renderer/src/network/websockets/websocket_frames";
 import { useLoadingText } from "renderer/src/hooks/useLoadingText";
+import FotoGesto from "./components/fotogesto";
+import InfoGesto from "./components/infogesto";
 
 interface AdicionarGestoProps {
     onNavigate: (page: 'home') => void;
@@ -16,6 +18,7 @@ const AdicionarGesto: React.FC<AdicionarGestoProps> = ({ onNavigate }) => {
     const [ports, setPorts] = useState<Ports | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const loadingText = useLoadingText("Preparando tudo", isLoading);
+    const [currentStage, setCurrentStage] = useState<"FOTO" | "INFO">("FOTO");
     const [error, setError] = useState(false);
 
     useEffect(() => {
@@ -116,6 +119,7 @@ const AdicionarGesto: React.FC<AdicionarGestoProps> = ({ onNavigate }) => {
 
     const handleTirarFoto = () => {
         console.log('Tirou foto!!!!! (:');
+        setCurrentStage("INFO");
     }
 
     if (isLoading) {
@@ -128,19 +132,8 @@ const AdicionarGesto: React.FC<AdicionarGestoProps> = ({ onNavigate }) => {
 
     return (
         <div className="content-container">
-            <div className="video-container">
-                {frame && (
-                    <img
-                        src={`data:image/jpeg;base64,${frame}`}
-                        alt="Video Stream"
-                        className="video"
-                    />
-                )}
-                <div className="buttons">
-                    <button onClick={() => onNavigate("home")} id="voltar-button">VOLTAR</button>
-                    <button onClick={handleTirarFoto} id="foto-button">TIRAR FOTO</button>
-                </div>
-            </div>
+            {currentStage === "FOTO" && <FotoGesto frame={frame} handleTirarFoto={handleTirarFoto}/>}
+            {currentStage === "INFO" && <InfoGesto onNavigate={onNavigate}/>}
         </div>
     );
 }

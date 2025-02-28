@@ -1,16 +1,43 @@
-.content-container {
-    width: 100%;
+.foto-content-container {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-top: 10px;
+    flex-direction: row;
+    justify-content: center;
+    gap: 10vw;
 }
 
-.video-container {
-    width: 33%;
+.cropped-video-container {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.tutorial-container {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding: 10px;
+    gap: 10vh;
+    height: fit-content;
+    top: 25vh;
+    background-color: #1f1f1f;
+    border-radius: 10px;
+}
+
+.tutorial-container h1 {
+    text-align: center;
+}
+
+.li-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2vh;
+    flex-wrap: wrap;
+    padding-left: 5vw;
+    padding: 20px;
+    border-style: none;
+    align-self: center;
 }
 
 .buttons {
